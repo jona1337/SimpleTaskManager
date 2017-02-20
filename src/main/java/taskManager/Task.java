@@ -48,10 +48,6 @@ public class Task implements Serializable{
         return id;
     }
 
-    public void setID(String id) {
-        this.id = id;
-    }
-
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(name)

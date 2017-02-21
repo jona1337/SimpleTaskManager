@@ -14,10 +14,9 @@ public class Server {
 
     private static final int PORT = 6934;
 
-    public static void main(String[]args) throws IOException,ParseException
-    {
+    public static void main(String[]args) throws IOException,ParseException {
 
-        ArrayList<Task> tasks = new ArrayList<Task>();
+        ArrayList<Task> tasks = new ArrayList<>();
         tasks.add(new Task("Task1", "LOL", DateUtils.parse("20.02.2016 21.30")));
         tasks.add(new Task("Task2", "LOL2", DateUtils.parse("20.02.2016 21.31")));
         tasks.add(new Task("Task3", "LOL3", DateUtils.parse("20.02.2016 21.32")));
@@ -27,6 +26,11 @@ public class Server {
         ServerSocket serverSocket = new ServerSocket(PORT);
         Socket socket = serverSocket.accept();
         System.out.println("Client is connected");
+
+        InputStream sin = socket.getInputStream();
+        OutputStream sout = socket.getOutputStream();
+
+
 
         OutputStream outputStream = socket.getOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);

@@ -4,7 +4,6 @@ package taskManager;
 import java.net.*;
 import java.io.*;
 import java.util.Timer;
-import java.util.Date;
 import java.util.TimerTask;
 
 public class Manager {
@@ -14,8 +13,8 @@ public class Manager {
 
     public static void main(String[]args)throws Exception {
 
-        InetAddress inetAddress= InetAddress.getByName(ADDRESS);
-        Socket socket=new Socket(inetAddress, PORT);
+        InetAddress inetAddress = InetAddress.getByName(ADDRESS);
+        Socket socket = new Socket(inetAddress, PORT);
 
         InputStream inputStream = socket.getInputStream();
         ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);

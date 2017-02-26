@@ -25,20 +25,21 @@
     <packaging>jar</packaging>
     <name>server</name>
 
-    <!--
-    <dependencies>
-        <dependency>
-            <groupId>com.jonacom</groupId>
-            <artifactId>simpleTaskManager</artifactId>
-            <version>0.1</version>
-        </dependency>
-
-    </dependencies>-->
 
     <build>
         <plugins>
-            <plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
@@ -47,7 +48,7 @@
                         <compress>true</compress>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
+                            <classpathPrefix>libs/</classpathPrefix>
                             <mainClass>server.ServerController</mainClass>
                         </manifest>
                     </archive>
@@ -55,7 +56,6 @@
                 <version>3.0.2</version>
             </plugin>
 
-            <!--
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -72,7 +72,8 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>-->
+                <version>3.0.0</version>
+            </plugin>
 
 
         </plugins>

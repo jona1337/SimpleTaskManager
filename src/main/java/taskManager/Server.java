@@ -27,15 +27,14 @@ public class Server {
         Socket socket = serverSocket.accept();
         System.out.println("Client is connected");
 
-        InputStream sin = socket.getInputStream();
-        OutputStream sout = socket.getOutputStream();
+        InputStream in = socket.getInputStream();
+        OutputStream out = socket.getOutputStream();
+
+        ObjectOutputStream oos = new ObjectOutputStream(out);
+        oos.writeObject(taskLog);
+        oos.flush();
 
 
-
-        OutputStream outputStream = socket.getOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-        objectOutputStream.writeObject(taskLog);
-        objectOutputStream.flush();
 
 
     }

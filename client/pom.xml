@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>simpleTaskManager</artifactId>
+        <groupId>com.jonacom</groupId>
+        <version>0.1</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>client</artifactId>
+    <version>0.1</version>
+    <dependencies>
+        <dependency>
+            <groupId>com.jonacom</groupId>
+            <artifactId>simpleTaskManager</artifactId>
+            <version>0.1</version>
+        </dependency>
+    </dependencies>
+    <packaging>jar</packaging>
+    <name>client</name>
+
+    <!--
+    <dependencies>
+        <dependency>
+            <groupId>com.jonacom</groupId>
+            <artifactId>simpleTaskManager</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+    </dependencies>-->
+
+
+    <build>
+        <plugins>
+            <plugin>
+
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                        <compress>true</compress>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>client.MainController</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <version>3.0.2</version>
+            </plugin>
+
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>client.MainController</mainClass>
+                </configuration>
+                <version>8.7.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/libs</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
+
+
+        </plugins>
+    </build>
+
+
+</project>

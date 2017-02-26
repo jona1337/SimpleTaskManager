@@ -1,23 +1,21 @@
 package taskManager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class NetFrame {
+public class NetFrame implements Serializable {
 
-    private Command command;
-    private ArrayList<?> arguments;
+    private NetCommand command;
 
-    public NetFrame(Command command, ArrayList<?> arguments) {
+    public NetFrame(NetCommand command) {
         this.command = command;
-        this.arguments = arguments;
     }
 
-    public Command getCommand() {
+    public NetCommand getCommand() {
         return command;
     }
 
-    public ArrayList<?> getArguments() {
-        return arguments;
+    public void setCommand(NetCommand command) {
+        this.command = command;
     }
-
 }

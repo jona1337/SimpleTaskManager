@@ -1,22 +1,24 @@
-package taskManager;
+package server;
 
-import javafx.collections.FXCollections;
+
+import taskManager.Task;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 
-public class TaskLog implements Serializable {
+public class ServerModel implements Serializable {
 
     private static final String DATA_PACKAGE = "data";
     private static final String TASKS_DATA_FILE = "tasks.data";
 
     private ArrayList<Task> tasks;
 
-    public TaskLog() {
+    public ServerModel() {
         initializeData();
     }
 
-    public TaskLog(ArrayList<Task> tasks) {
+    public ServerModel(ArrayList<Task> tasks) {
         this.tasks = tasks;
     }
 
@@ -114,7 +116,8 @@ public class TaskLog implements Serializable {
         return null;
     }
 
-    public void addTask(Task task) {
+    public void addTask(String name, String description, Date date) {
+        Task task = new Task(name, description, date);
         tasks.add(task);
     }
 
@@ -122,6 +125,14 @@ public class TaskLog implements Serializable {
         Task task = getTask(id);
         if (task == null) return;
         tasks.remove(task);
+    }
+
+    public void editTask(String id, String name, String description, Date date) {
+        Task task = getTask(id);
+        if (task == null) return;
+        task.setName(name);
+        task.setDescription(description);
+        task.setDate(date);
     }
 
 }

@@ -7,7 +7,15 @@
     <groupId>com.jonacom</groupId>
     <artifactId>simpleTaskManager</artifactId>
     <version>0.1</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
+    <name>simpleTaskManager</name>
+
+    <modules>
+        <module>server</module>
+        <module>client</module>
+    </modules>
+
+    <!--
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,7 +26,7 @@
     <build>
         <plugins>
             <plugin>
-                <!-- Build an executable JAR -->
+
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.0.2</version>
@@ -27,7 +35,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>taskManager.Server</mainClass>
+                            <mainClass>taskManager.server.Provider</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -43,6 +51,6 @@
             </plugin>
 
         </plugins>
-    </build>
+    </build> -->
 
 </project>

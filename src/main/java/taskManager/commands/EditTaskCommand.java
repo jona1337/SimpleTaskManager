@@ -6,9 +6,9 @@ import taskManager.Task;
 
 import java.util.Date;
 
-public class EditTaskCommand extends NetCommand {
+public class EditTaskCommand implements NetCommand {
 
-    private static final CommandTypeEnum type = CommandTypeEnum.edit;
+    private CommandTypeEnum type = CommandTypeEnum.edit;
 
     private String id;
     private String name;
@@ -20,6 +20,10 @@ public class EditTaskCommand extends NetCommand {
         this.name = name;
         this.description = description;
         this.date = date;
+    }
+
+    public CommandTypeEnum getType() {
+        return type;
     }
 
     public String getId() {

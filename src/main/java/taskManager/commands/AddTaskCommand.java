@@ -7,9 +7,9 @@ import taskManager.Task;
 
 import java.util.Date;
 
-public class AddTaskCommand extends NetCommand {
+public class AddTaskCommand implements NetCommand {
 
-    private static final CommandTypeEnum type = CommandTypeEnum.add;
+    private CommandTypeEnum type = CommandTypeEnum.add;
 
     private String name;
     private String description;
@@ -19,6 +19,10 @@ public class AddTaskCommand extends NetCommand {
         this.name = name;
         this.description = description;
         this.date = date;
+    }
+
+    public CommandTypeEnum getType() {
+        return type;
     }
 
     public String getName() {

@@ -12,7 +12,7 @@ public class ServerModel implements Serializable {
     private static final String DATA_PACKAGE = "data";
     private static final String TASKS_DATA_FILE = "tasks.data";
 
-    private ArrayList<Task> tasks;
+    private ArrayList<Task> tasks = new ArrayList<>();
 
     public ServerModel() {
         initializeData();

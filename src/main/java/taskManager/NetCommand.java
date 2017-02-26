@@ -2,12 +2,8 @@ package taskManager;
 
 import java.io.Serializable;
 
-public abstract class NetCommand implements Serializable {
+public interface NetCommand extends Serializable {
 
-    private static final CommandTypeEnum type = null;
-
-    public static CommandTypeEnum getType() {
-        return type;
-    }
+    CommandTypeEnum getType();
 
 }

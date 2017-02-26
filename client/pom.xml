@@ -6,12 +6,14 @@
         <artifactId>simpleTaskManager</artifactId>
         <groupId>com.jonacom</groupId>
         <version>0.1</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>client</artifactId>
     <version>0.1</version>
+
     <dependencies>
         <dependency>
             <groupId>com.jonacom</groupId>
@@ -63,7 +65,7 @@
                 <version>8.7.0</version>
             </plugin>
 
-
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -81,7 +83,7 @@
                 </executions>
                 <version>3.0.0</version>
             </plugin>
-
+            -->
 
         </plugins>
     </build>

@@ -62,7 +62,7 @@ public class ServerController {
             // idk
         }
 
-        //Костыль для обновления после изменения
+        //Костыль
         provider.sendFrame(new NetFrame(new DataCommand(serverModel.getTasks())));
 
     }

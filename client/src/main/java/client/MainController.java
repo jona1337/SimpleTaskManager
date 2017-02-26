@@ -190,8 +190,11 @@ public class MainController extends Application {
         NetCommand command = frame.getCommand();
         CommandTypeEnum type = command.getType();
 
+        System.out.println(type.toString());
+
         if (type == CommandTypeEnum.data) {
             model.setTasks( ((DataCommand)command).getTasks() );
+            taskListController.refreshItems();
         }
 
     }

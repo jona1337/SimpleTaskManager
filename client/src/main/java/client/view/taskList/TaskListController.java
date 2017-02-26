@@ -48,6 +48,10 @@ public class TaskListController {
 
     public void setMainController(MainController controller) {
         this.controller = controller;
+        refreshItems();
+    }
+
+    public void refreshItems() {
         taskTable.setItems(controller.getModel().getTasks());
     }
 

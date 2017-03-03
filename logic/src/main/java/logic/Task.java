@@ -51,8 +51,9 @@ public class Task implements Serializable{
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(name)
-                .append("\n")
+                .append(" / ")
                 .append(description)
+                .append(" / ")
                 .append(DateUtils.format(date));
         return sb.toString();
     }

@@ -1,12 +1,15 @@
 package server;
 
 import logic.NetFrame;
+import logic.Task;
+import logic.commands.SendTaskListCommand;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
 
 public class Connection implements Runnable {
 
@@ -87,6 +90,14 @@ public class Connection implements Runnable {
     }
 
     public void sendFrame(NetFrame frame) {
+
+        try {
+            out.reset();
+        } catch (IOException e) {
+            System.out.println("Cant reset out stream!");
+            e.printStackTrace();
+        }
+
         try {
             out.writeObject(frame);
             out.flush();

@@ -49,7 +49,12 @@ public class TaskEditDialogController {
     private void handleOk() {
         if (isInputValid()) {
 
-            Date date = DateUtils.parse(dateField.getText());
+            Date date;
+            if (dateField.getText() == null || dateField.getText().isEmpty()) {
+                date = new Date();
+            } else {
+                date = DateUtils.parse(dateField.getText());
+            }
 
             if (isNewTaskMode()) {
                 controller.getController().addTaskCommand(nameField.getText(), descriptionField.getText(), date);
@@ -86,8 +91,8 @@ public class TaskEditDialogController {
             isValid = false;
         }
         if (dateField.getText() == null || dateField.getText().isEmpty()) {
-            errorMessage += "Write date!\n";
-            isValid = false;
+            //errorMessage += "Write date!\n";
+            //isValid = false;
         } else {
             if (!DateUtils.isValidDate(dateField.getText())) {
                 errorMessage += "Invalid date!\n";

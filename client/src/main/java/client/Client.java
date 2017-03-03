@@ -2,7 +2,8 @@ package client;
 
 
 import logic.NetFrame;
-import logic.commands.MessageCommand;
+import logic.Task;
+import logic.commands.SendTaskListCommand;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,6 +12,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class Client implements Runnable {
 
@@ -71,7 +73,6 @@ public class Client implements Runnable {
 
         while (true) {
             NetFrame frame = null;
-
             try {
                 frame = (NetFrame) in.readObject();
             } catch (SocketException e) {

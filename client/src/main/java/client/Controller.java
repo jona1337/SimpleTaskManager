@@ -2,11 +2,13 @@ package client;
 
 import logic.NetData;
 import logic.NetFrame;
+import logic.Task;
 import logic.commands.AddTaskCommand;
 import logic.commands.DeleteTaskCommand;
 import logic.commands.EditTaskCommand;
 import logic.commands.SendTaskListCommand;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Controller {
@@ -42,11 +44,13 @@ public class Controller {
     }
 
     public void receiveData(NetData data) {
+
         if (data instanceof SendTaskListCommand) {
+
             model.setTasks( ((SendTaskListCommand)data).getTasks() );
 
             // --------- КОСТЫЛЬ!111
-            uiController.updateData();
+            //uiController.updateData();
             // ---------
         }
     }

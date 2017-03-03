@@ -161,9 +161,9 @@ public class UserInterfaceController extends Application {
         taskListController.showTaskDetails();
     }
 
-    public void updateData() {
-        taskListController.refreshItems();
-    }
+    //public void updateData() {
+    //    taskListController.refreshItems();
+    //}
 
     public static void main(String[] args) {
         launch(args);

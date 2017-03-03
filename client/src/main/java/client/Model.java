@@ -23,7 +23,12 @@ public class Model {
     }
 
     public void setTasks(ArrayList<Task> tasks) {
-        this.tasks = FXCollections.observableArrayList(tasks);
+
+
+
+        this.tasks.clear();
+        this.tasks.addAll(tasks);
+
     }
 
 }

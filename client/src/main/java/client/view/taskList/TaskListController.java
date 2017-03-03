@@ -50,13 +50,14 @@ public class TaskListController {
 
     public void setMainController(UserInterfaceController controller) {
         this.controller = controller;
-        refreshItems();
+        taskTable.setItems(controller.getController().getModel().getTasks());
     }
-
+    /*
     public void refreshItems() {
         System.out.println("TaskListController: update data");
         taskTable.setItems(controller.getController().getModel().getTasks());
     }
+    */
 
     private void showTaskDetails(Task task) {
         if (task == null) {

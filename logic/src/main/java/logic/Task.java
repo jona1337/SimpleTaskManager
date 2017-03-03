@@ -1,6 +1,6 @@
-package taskManager;
+package logic;
 
-import taskManager.utils.DateUtils;
+import logic.utils.DateUtils;
 
 import java.io.Serializable;
 import java.util.Date;

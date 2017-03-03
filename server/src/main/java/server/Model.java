@@ -1,24 +1,24 @@
 package server;
 
 
-import taskManager.Task;
+import logic.Task;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class ServerModel implements Serializable {
+public class Model implements Serializable {
 
     private static final String DATA_PACKAGE = "data";
     private static final String TASKS_DATA_FILE = "tasks.data";
 
     private ArrayList<Task> tasks = new ArrayList<>();
 
-    public ServerModel() {
+    public Model() {
         initializeData();
     }
 
-    public ServerModel(ArrayList<Task> tasks) {
+    public Model(ArrayList<Task> tasks) {
         this.tasks = tasks;
     }
 
@@ -119,12 +119,14 @@ public class ServerModel implements Serializable {
     public void addTask(String name, String description, Date date) {
         Task task = new Task(name, description, date);
         tasks.add(task);
+        saveData();
     }
 
     public void removeTask(String id) {
         Task task = getTask(id);
         if (task == null) return;
         tasks.remove(task);
+        saveData();
     }
 
     public void editTask(String id, String name, String description, Date date) {
@@ -133,6 +135,7 @@ public class ServerModel implements Serializable {
         task.setName(name);
         task.setDescription(description);
         task.setDate(date);
+        saveData();
     }
 
 }

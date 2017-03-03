@@ -1,11 +1,11 @@
 package client.view.taskEdit;
 
-import client.MainController;
+import client.UserInterfaceController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import taskManager.Task;
-import taskManager.utils.DateUtils;
+import logic.Task;
+import logic.utils.DateUtils;
 
 import java.util.Date;
 
@@ -18,7 +18,7 @@ public class TaskEditDialogController {
     @FXML
     private TextField dateField;
 
-    private MainController controller;
+    private UserInterfaceController controller;
 
     private Task task;
 
@@ -26,7 +26,7 @@ public class TaskEditDialogController {
     private void initialize() {
     }
 
-    public void setMainController(MainController controller) {
+    public void setMainController(UserInterfaceController controller) {
         this.controller = controller;
     }
 
@@ -52,10 +52,10 @@ public class TaskEditDialogController {
             Date date = DateUtils.parse(dateField.getText());
 
             if (isNewTaskMode()) {
-                controller.addTaskCommand(nameField.getText(), descriptionField.getText(), date);
+                controller.getController().addTaskCommand(nameField.getText(), descriptionField.getText(), date);
                 controller.hideEditDialog();
             } else {
-                controller.editTaskCommand(task.getID(), nameField.getText(), descriptionField.getText(), date);
+                controller.getController().editTaskCommand(task.getID(), nameField.getText(), descriptionField.getText(), date);
                 controller.refreshTaskOverviewDetails();
                 controller.hideEditDialog();
             }

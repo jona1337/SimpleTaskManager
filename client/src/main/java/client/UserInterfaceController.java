@@ -6,32 +6,26 @@ import client.view.taskEdit.TaskEditDialogController;
 import client.view.taskList.TaskListController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import taskManager.CommandTypeEnum;
-import taskManager.NetCommand;
-import taskManager.NetFrame;
-import taskManager.Task;
-import taskManager.commands.AddTaskCommand;
-import taskManager.commands.DataCommand;
-import taskManager.commands.DeleteTaskCommand;
-import taskManager.commands.EditTaskCommand;
+import logic.Task;
+import logic.commands.GetTaskListCommand;
+import logic.commands.SendTaskListCommand;
 
 import java.io.IOException;
-import java.util.Date;
 
-public class MainController extends Application {
+public class UserInterfaceController extends Application {
 
     private static final String APP_TITTLE = "Simple Task Manager";
     private static final String EDIT_TASK_DIALOG_TITTLE = "Edit task";
     private static final String NEW_TASK_DIALOG_TITTLE = "New task";
 
-    private Client client;
-    private ClientModel model;
+    private Controller controller;
 
     private Stage primaryStage;
     private BorderPane rootLayout;
@@ -44,21 +38,22 @@ public class MainController extends Application {
     private TaskListController taskListController;
     private TaskEditDialogController taskEditDialogController;
 
-    public Stage getPrimaryStage() {
-        return primaryStage;
+    public Controller getController() {
+        return this.controller;
     }
 
-    public ClientModel getModel() {
-        return model;
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 
     @Override
     public void start(Stage primaryStage) {
 
+        controller = new Controller(this);
+        controller.startClient();
+
         this.primaryStage = primaryStage;
         primaryStage.setTitle(APP_TITTLE);
-
-        initModel();
 
         initRoot();
         initTaskOverview();
@@ -66,27 +61,15 @@ public class MainController extends Application {
         initDialog();
         initTaskEditDialog();
 
+
+        controller.sendData(new GetTaskListCommand());
+
         Scene scene = new Scene(rootLayout);
         primaryStage.setScene(scene);
-
-        initClient();
 
         showTaskOverview();
         primaryStage.show();
 
-    }
-
-    private void initClient() {
-        client = new Client();
-        client.setController(this);
-
-        Thread t = new Thread(client);
-        t.start();
-
-    }
-
-    private void initModel() {
-        model = new ClientModel();
     }
 
     private void initRoot() {
@@ -178,39 +161,13 @@ public class MainController extends Application {
         taskListController.showTaskDetails();
     }
 
+    public void updateData() {
+        taskListController.refreshItems();
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
-
-
-    /*--------------------*/
-
-    public void parseFrame(NetFrame frame) {
-
-        NetCommand command = frame.getCommand();
-        CommandTypeEnum type = command.getType();
-
-        System.out.println(type.toString());
-
-        if (type == CommandTypeEnum.data) {
-            model.setTasks( ((DataCommand)command).getTasks() );
-            taskListController.refreshItems();
-        }
-
-    }
-
-    public void addTaskCommand(String name, String description, Date date) {
-        client.sendFrame(new NetFrame(new AddTaskCommand(name, description, date)));
-    }
-
-    public void editTaskCommand(String id, String name, String description, Date date) {
-        client.sendFrame(new NetFrame(new EditTaskCommand(id, name, description, date)));
-    }
-
-    public void deleteTaskCommand(String id) {
-        client.sendFrame(new NetFrame(new DeleteTaskCommand(id)));
-    }
-
 
 
 }

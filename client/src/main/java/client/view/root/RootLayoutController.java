@@ -1,15 +1,15 @@
 package client.view.root;
 
-import client.MainController;
+import client.UserInterfaceController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
 public class RootLayoutController {
 
-    private MainController controller;
+    private UserInterfaceController controller;
 
-    public void setMainController(MainController controller) {
+    public void setMainController(UserInterfaceController controller) {
         this.controller = controller;
     }
 

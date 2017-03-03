@@ -2,19 +2,19 @@ package client;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import taskManager.Task;
+import logic.Task;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-public class ClientModel {
+public class Model {
 
-    private ObservableList<Task> tasks = FXCollections.observableArrayList();
+    private ObservableList<Task> tasks;
 
-    public ClientModel() {
+    public Model() {
+        tasks = FXCollections.observableArrayList();
     }
 
-    public ClientModel(ObservableList<Task> tasks) {
+    public Model(ObservableList<Task> tasks) {
         this.tasks = tasks;
     }
 

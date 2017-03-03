@@ -1,14 +1,10 @@
-package taskManager.commands;
+package logic.commands;
 
-import taskManager.CommandTypeEnum;
-import taskManager.NetCommand;
-import taskManager.Task;
+import logic.NetData;
 
 import java.util.Date;
 
-public class EditTaskCommand implements NetCommand {
-
-    private CommandTypeEnum type = CommandTypeEnum.edit;
+public class EditTaskCommand implements NetData {
 
     private String id;
     private String name;
@@ -20,10 +16,6 @@ public class EditTaskCommand implements NetCommand {
         this.name = name;
         this.description = description;
         this.date = date;
-    }
-
-    public CommandTypeEnum getType() {
-        return type;
     }
 
     public String getId() {

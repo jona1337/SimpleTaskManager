@@ -2,29 +2,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <parent>
         <artifactId>simpleTaskManager</artifactId>
         <groupId>com.jonacom</groupId>
         <version>0.1</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>client</artifactId>
-    <version>0.1</version>
 
     <dependencies>
         <dependency>
-            <groupId>com.jonacom</groupId>
-            <artifactId>simpleTaskManager</artifactId>
-            <version>0.1</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>logic</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
-
-    <packaging>jar</packaging>
-    <name>client</name>
-
 
     <build>
         <plugins>
@@ -49,7 +44,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
-                            <mainClass>client.MainController</mainClass>
+                            <mainClass>client.ClientRun</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -60,30 +55,10 @@
                 <groupId>com.zenjava</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>client.MainController</mainClass>
+                    <mainClass>client.ClientRun</mainClass>
                 </configuration>
                 <version>8.7.0</version>
             </plugin>
-
-            <!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/libs</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-                <version>3.0.0</version>
-            </plugin>
-            -->
 
         </plugins>
     </build>

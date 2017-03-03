@@ -1,14 +1,16 @@
 package client.view.taskList;
 
-import client.MainController;
+import client.Controller;
+import client.UserInterfaceController;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import taskManager.Task;
-import taskManager.utils.DateUtils;
+import logic.Task;
+import logic.utils.DateUtils;
 
 public class TaskListController {
     @FXML
@@ -25,7 +27,7 @@ public class TaskListController {
     @FXML
     private Label dateLabel;
 
-    private MainController controller;
+    private UserInterfaceController controller;
 
     public TaskListController() {
     }
@@ -46,13 +48,14 @@ public class TaskListController {
 
 
 
-    public void setMainController(MainController controller) {
+    public void setMainController(UserInterfaceController controller) {
         this.controller = controller;
         refreshItems();
     }
 
     public void refreshItems() {
-        taskTable.setItems(controller.getModel().getTasks());
+        System.out.println("TaskListController: update data");
+        taskTable.setItems(controller.getController().getModel().getTasks());
     }
 
     private void showTaskDetails(Task task) {
@@ -81,7 +84,7 @@ public class TaskListController {
         Task task = taskTable.getSelectionModel().getSelectedItem();
         if (task != null) {
             String id = task.getID();
-            controller.deleteTaskCommand(id);
+            controller.getController().deleteTaskCommand(id);
         } else {
             showNoSelectedAlert();
         }

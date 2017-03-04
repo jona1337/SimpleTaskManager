@@ -1,9 +1,7 @@
 package client.view.taskList;
 
-import client.Controller;
 import client.UserInterfaceController;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;

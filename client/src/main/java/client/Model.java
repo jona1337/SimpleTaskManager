@@ -1,5 +1,6 @@
 package client;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import logic.Task;
@@ -24,10 +25,10 @@ public class Model {
 
     public void setTasks(ArrayList<Task> tasks) {
 
-
-
-        this.tasks.clear();
-        this.tasks.addAll(tasks);
+        Platform.runLater(() -> {
+            this.tasks.clear();
+            this.tasks.addAll(tasks);
+        });
 
     }
 

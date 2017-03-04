@@ -93,6 +93,10 @@ public class Server implements Runnable {
 
     }
 
+    public void onConnectionClosed(Connection connection) {
+        connections.remove(connection);
+    }
+
     public void sendFrame(NetFrame frame) {
 
         for (Connection connection : connections) {

@@ -29,9 +29,7 @@ public class Controller {
 
     }
 
-    public void parseFrame(NetFrame frame) {
-
-        NetData data = frame.getData();
+    public void receiveData(NetData data) {
 
         if (data instanceof AddTaskCommand) {
             AddTaskCommand addTaskCommand = (AddTaskCommand) data;
@@ -53,15 +51,17 @@ public class Controller {
 
         } else if (data instanceof GetTaskListCommand) {
 
-            ArrayList<Task> tasks = model.getTasks();
-
-            server.sendFrame(new NetFrame(new SendTaskListCommand(tasks)));
+            sendData(new SendTaskListCommand(model.getTasks()));
 
         }
 
         //Костыль
-        server.sendFrame(new NetFrame(new SendTaskListCommand(model.getTasks())));
+        sendData(new SendTaskListCommand(model.getTasks()));
 
+    }
+
+    public void sendData(NetData data) {
+        server.sendFrame(new NetFrame(data));
     }
 
 }

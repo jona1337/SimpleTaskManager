@@ -1,12 +1,10 @@
 package client;
 
+import javafx.application.Platform;
 import logic.NetData;
 import logic.NetFrame;
 import logic.Task;
-import logic.commands.AddTaskCommand;
-import logic.commands.DeleteTaskCommand;
-import logic.commands.EditTaskCommand;
-import logic.commands.SendTaskListCommand;
+import logic.commands.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +36,9 @@ public class Controller {
         clientThread.start();
     }
 
+    public void onServerConnectionEstablished() {
+        getTaskListCommand();
+    }
 
     public void sendData(NetData data) {
         client.sendFrame(new NetFrame(data));
@@ -53,6 +54,11 @@ public class Controller {
             //uiController.updateData();
             // ---------
         }
+    }
+
+
+    public void getTaskListCommand() {
+        sendData(new GetTaskListCommand());
     }
 
     public void addTaskCommand(String name, String description, Date date) {

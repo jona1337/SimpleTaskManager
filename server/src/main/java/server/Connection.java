@@ -1,29 +1,26 @@
 package server;
 
 import logic.NetFrame;
-import logic.Task;
-import logic.commands.SendTaskListCommand;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
 
 public class Connection implements Runnable {
 
-    private Socket connection;
+    private Socket socket;
     private Server server;
     private ObjectOutputStream out;
     private ObjectInputStream in;
-    private boolean running;
+    private boolean connected;
 
     public Connection(Socket connection, Server server) {
 
-        this.running = false;
-        this.connection = connection;
+        this.socket = connection;
         this.server = server;
+        this.connected = true;
 
         try {
             out = new ObjectOutputStream(connection.getOutputStream());
@@ -43,24 +40,20 @@ public class Connection implements Runnable {
 
     public void run() {
 
-        if (running) return;
-
-        running = true;
-
-        while (running) {
+        while (connected) {
 
             NetFrame frame = null;
             try {
                 frame = (NetFrame) in.readObject();
-
             } catch (SocketException e) {
+                System.out.println("Connection " + socket.getInetAddress().getHostName() + " failed. Closing connection");
                 close();
-                return;
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                System.exit(1);
+                System.out.println("Server received unknown frame!");
+
             } catch (IOException e) {
                 e.printStackTrace();
+                System.exit(1);
             }
             if (frame != null) {
                 receiveFrame(frame);
@@ -72,8 +65,6 @@ public class Connection implements Runnable {
 
     public void close() {
 
-        running = false;
-
         try {
             in.close();
             out.close();
@@ -82,12 +73,17 @@ public class Connection implements Runnable {
         }
 
         try {
-            connection.close();
+            socket.close();
         } catch (IOException e) {
             System.out.println("Cant close connection");
         }
 
+        connected = false;
+
+        server.onConnectionClosed(this);
+
     }
+
 
     public void sendFrame(NetFrame frame) {
 
@@ -107,7 +103,7 @@ public class Connection implements Runnable {
     }
 
     private void receiveFrame(NetFrame frame) {
-        server.getController().parseFrame(frame);
+        server.getController().receiveData(frame.getData());
     }
 
 

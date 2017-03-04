@@ -2,8 +2,6 @@ package client;
 
 
 import logic.NetFrame;
-import logic.Task;
-import logic.commands.SendTaskListCommand;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -12,7 +10,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 public class Client implements Runnable {
 
@@ -32,6 +29,8 @@ public class Client implements Runnable {
     }
 
     private void connect() {
+
+        System.out.println("Trying to connect...");
 
         InetAddress inetAddress = null;
         try {
@@ -65,28 +64,65 @@ public class Client implements Runnable {
         }
         System.out.println("Successful streams initializing!");
 
+        controller.onServerConnectionEstablished();
+
+    }
+
+    private void close() {
+
+        try {
+            in.close();
+            out.close();
+        } catch (IOException e) {
+            System.out.println("Cant close connection streams");
+        }
+
+        try {
+            socket.close();
+        } catch (IOException e) {
+            System.out.println("Cant close connection");
+        }
+
+        socket = null;
+        in = null;
+        out = null;
+
+    }
+
+    private void checkConnection() {
+
+        if (socket == null) {
+            connect();
+            return;
+
+        } else if (!socket.isConnected() || socket.isClosed()) {
+            close();
+            connect();
+        }
+
     }
 
     public void run() {
 
-        connect();
-
         while (true) {
+
+            checkConnection();
+
             NetFrame frame = null;
             try {
                 frame = (NetFrame) in.readObject();
-            } catch (SocketException e) {
-                System.out.println("Socket was closed");
-                return;
+            } catch (ClassNotFoundException e) {
+                System.out.println("Client received unknown frame!");
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                System.exit(1);
             }
+
             if (frame != null) {
                 System.out.println("Client got new message!");
                 receiveFrame(frame);
             }
+
         }
 
     }

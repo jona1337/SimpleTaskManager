@@ -38,8 +38,10 @@ public class UserInterfaceController extends Application {
     private BorderPane dialogRoot;
     private Parent taskEditDialog;
 
+    private RootLayoutController rootLayoutController;
     private TaskListController taskListController;
     private TaskEditDialogController taskEditDialogController;
+
 
     public Controller getController() {
         return this.controller;
@@ -88,6 +90,7 @@ public class UserInterfaceController extends Application {
         }
         this.rootLayout = rootLayout;
         RootLayoutController controller = loader.getController();
+        rootLayoutController = controller;
         controller.setMainController(this);
     }
 
@@ -165,6 +168,9 @@ public class UserInterfaceController extends Application {
         taskListController.showTaskDetails();
     }
 
+    public void setAppStatusInfo(String info) {
+        rootLayoutController.setStatusLabel(info);
+    }
 
     @Override
     public void stop(){

@@ -80,5 +80,12 @@ public class Controller {
     }
 
 
+    public void setAppStatusInfo(String info) {
+        Platform.runLater(() -> {
+            uiController.setAppStatusInfo(info);
+        });
+
+    }
+
 
 }

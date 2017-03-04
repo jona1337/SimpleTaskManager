@@ -35,6 +35,8 @@ public class Client implements Runnable {
 
         if (isEnable) return;
 
+        setConnectionStatusInfo("Client is enabled");
+
         isEnable = true;
         Thread runClientThread = new Thread(this);
         runClientThread.start();
@@ -43,7 +45,9 @@ public class Client implements Runnable {
     public void disable() {
 
         if (!isEnable) return;
-        System.out.println("Disable client");
+
+        setConnectionStatusInfo("Client is disabled");
+
         isEnable = false;
         disconnect();
     }
@@ -52,7 +56,7 @@ public class Client implements Runnable {
 
         if (!isEnable) return;
 
-        System.out.println("Trying to connect...");
+        setConnectionStatusInfo("No connection. Trying to connect...");
 
         InetAddress inetAddress = null;
         try {
@@ -69,10 +73,9 @@ public class Client implements Runnable {
             try {
                 socket = new Socket(inetAddress, PORT);
             } catch (IOException e) {
-                System.out.println("Connection is failed");
+                //
             }
         }
-        System.out.println("Successful connection!");
 
         try {
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -87,8 +90,8 @@ public class Client implements Runnable {
             e.printStackTrace();
             System.exit(1);
         }
-        System.out.println("Successful streams initializing!");
 
+        setConnectionStatusInfo("Successful connection! Streams initialized");
         controller.onServerConnectionEstablished();
 
     }
@@ -97,22 +100,26 @@ public class Client implements Runnable {
 
         if (!isConnected()) return;
 
+        setConnectionStatusInfo("Disconnecting...");
+
         try {
             in.close();
             out.close();
         } catch (IOException e) {
-            System.out.println("Cant close connection streams");
+            setConnectionStatusInfo("Cant close connection streams");
         }
 
         try {
             socket.close();
         } catch (IOException e) {
-            System.out.println("Cant close connection");
+            setConnectionStatusInfo("Cant close connection");
         }
 
         socket = null;
         in = null;
         out = null;
+
+        setConnectionStatusInfo("Client disconnected");
 
     }
 
@@ -132,14 +139,13 @@ public class Client implements Runnable {
             try {
                 frame = (NetFrame) in.readObject();
             } catch (ClassNotFoundException e) {
-                System.out.println("Client received unknown frame!");
+                setConnectionStatusInfo("Client received unknown frame!");
             } catch (Exception e) {
                 disconnect();
                 connect();
             }
 
             if (frame != null) {
-                System.out.println("Client got new message!");
                 receiveFrame(frame);
             }
 
@@ -150,7 +156,7 @@ public class Client implements Runnable {
     public void sendFrame(NetFrame frame) {
 
         if (!isConnected()) {
-            System.out.println("No connection. Cant send frame");
+            setConnectionStatusInfo("No connection. Cant send frame");
             return;
         }
 
@@ -158,7 +164,7 @@ public class Client implements Runnable {
             out.writeObject(frame);
             out.flush();
         } catch (SocketException e) {
-            System.out.println("Socket was closed. Cant send frame");
+            setConnectionStatusInfo("Connection was closed. Cant send frame");
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
@@ -171,5 +177,8 @@ public class Client implements Runnable {
         controller.receiveData(frame.getData());
     }
 
+    private void setConnectionStatusInfo(String info) {
+        controller.setAppStatusInfo(info);
+    }
 
 }

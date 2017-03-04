@@ -4,13 +4,21 @@ import client.UserInterfaceController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
 
 public class RootLayoutController {
+
+    @FXML
+    private Label statusLabel;
 
     private UserInterfaceController controller;
 
     public void setMainController(UserInterfaceController controller) {
         this.controller = controller;
+    }
+
+    public void setStatusLabel(String status) {
+        statusLabel.setText(status);
     }
 
     @FXML

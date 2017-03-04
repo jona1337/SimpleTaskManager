@@ -63,6 +63,9 @@ public class Client implements Runnable {
         }
 
         while (socket == null) {
+
+            if (!isEnable) return;
+
             try {
                 socket = new Socket(inetAddress, PORT);
             } catch (IOException e) {
@@ -128,15 +131,11 @@ public class Client implements Runnable {
             NetFrame frame = null;
             try {
                 frame = (NetFrame) in.readObject();
-            } catch (SocketException e) {
-                disconnect();
-                connect();
-
             } catch (ClassNotFoundException e) {
                 System.out.println("Client received unknown frame!");
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.exit(1);
+            } catch (Exception e) {
+                disconnect();
+                connect();
             }
 
             if (frame != null) {

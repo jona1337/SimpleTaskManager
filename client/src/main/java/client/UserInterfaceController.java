@@ -6,6 +6,8 @@ import client.view.taskEdit.TaskEditDialogController;
 import client.view.taskList.TaskListController;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -50,7 +52,8 @@ public class UserInterfaceController extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        controller = new Controller(this);
+        controller = new Controller();
+        controller.setController(this);
         controller.startClient();
 
 
@@ -160,6 +163,12 @@ public class UserInterfaceController extends Application {
 
     public void refreshTaskOverviewDetails() {
         taskListController.showTaskDetails();
+    }
+
+
+    @Override
+    public void stop(){
+        controller.stopClient();
     }
 
     public static void main(String[] args) {

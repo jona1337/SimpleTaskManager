@@ -21,14 +21,36 @@ public class Client implements Runnable {
     private ObjectOutputStream out;
     private ObjectInputStream in;
 
+    private boolean isEnable;
+
     public Client() {
+        isEnable = false;
     }
 
     public void setController(Controller controller) {
         this.controller = controller;
     }
 
+    public void enable() {
+
+        if (isEnable) return;
+
+        isEnable = true;
+        Thread runClientThread = new Thread(this);
+        runClientThread.start();
+    }
+
+    public void disable() {
+
+        if (!isEnable) return;
+        System.out.println("Disable client");
+        isEnable = false;
+        disconnect();
+    }
+
     private void connect() {
+
+        if (!isEnable) return;
 
         System.out.println("Trying to connect...");
 
@@ -68,7 +90,9 @@ public class Client implements Runnable {
 
     }
 
-    private void close() {
+    private void disconnect() {
+
+        if (!isConnected()) return;
 
         try {
             in.close();
@@ -89,28 +113,25 @@ public class Client implements Runnable {
 
     }
 
-    private void checkConnection() {
-
-        if (socket == null) {
-            connect();
-            return;
-
-        } else if (!socket.isConnected() || socket.isClosed()) {
-            close();
-            connect();
-        }
-
+    private boolean isConnected() {
+        return (socket != null && in != null && out != null);
     }
 
     public void run() {
 
-        while (true) {
+        while (isEnable) {
 
-            checkConnection();
+            if (!isConnected()) {
+                connect();
+            }
 
             NetFrame frame = null;
             try {
                 frame = (NetFrame) in.readObject();
+            } catch (SocketException e) {
+                disconnect();
+                connect();
+
             } catch (ClassNotFoundException e) {
                 System.out.println("Client received unknown frame!");
             } catch (IOException e) {
@@ -129,8 +150,8 @@ public class Client implements Runnable {
 
     public void sendFrame(NetFrame frame) {
 
-        if (socket == null) {
-            System.out.println("Socket is null. Cant send frame");
+        if (!isConnected()) {
+            System.out.println("No connection. Cant send frame");
             return;
         }
 
@@ -139,6 +160,7 @@ public class Client implements Runnable {
             out.flush();
         } catch (SocketException e) {
             System.out.println("Socket was closed. Cant send frame");
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

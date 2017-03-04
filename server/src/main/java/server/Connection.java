@@ -2,6 +2,7 @@ package server;
 
 import logic.NetFrame;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -50,7 +51,9 @@ public class Connection implements Runnable {
                 close();
             } catch (ClassNotFoundException e) {
                 System.out.println("Server received unknown frame!");
-
+            } catch (EOFException e) {  // ИСПРАВИТЬ ? ? ? ? ?
+                System.out.println("Server EOFException! Closing connection");
+                close();
             } catch (IOException e) {
                 e.printStackTrace();
                 System.exit(1);

@@ -15,16 +15,19 @@ public class Controller {
     Model model;
     UserInterfaceController uiController;
 
-    public Controller(UserInterfaceController uiController) {
+    public Controller() {
 
         model = new Model();
         client = new Client();
         client.setController(this);
-        this.uiController = uiController;
         //System.out.println("Set controller 1");
         //uiController.setController(this);
         //System.out.println("Set controller 2");
 
+    }
+
+    public void setController(UserInterfaceController controller) {
+        this.uiController = controller;
     }
 
     public Model getModel() {
@@ -32,8 +35,11 @@ public class Controller {
     }
 
     public void startClient() {
-        Thread clientThread = new Thread(client);
-        clientThread.start();
+        client.enable();
+    }
+
+    public void stopClient() {
+        client.disable();
     }
 
     public void onServerConnectionEstablished() {

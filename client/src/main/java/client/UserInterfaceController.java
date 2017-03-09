@@ -10,23 +10,34 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import logic.Task;
 import logic.commands.GetTaskListCommand;
 import logic.commands.SendTaskListCommand;
 
+import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.net.URL;
 
 public class UserInterfaceController extends Application {
 
     private static final String APP_TITTLE = "Simple Task Manager";
     private static final String EDIT_TASK_DIALOG_TITTLE = "Edit task";
     private static final String NEW_TASK_DIALOG_TITTLE = "New task";
+    private static final String iconImageLoc =
+            "http://icons.iconarchive.com/icons/custom-icon-design/flatastic-11/16/Megaphone-icon.png";
 
     private Controller controller;
 
@@ -73,9 +84,25 @@ public class UserInterfaceController extends Application {
         Scene scene = new Scene(rootLayout);
         primaryStage.setScene(scene);
 
+
         showTaskOverview();
         primaryStage.show();
+        //tray
+        Platform.setImplicitExit(false);
 
+        javax.swing.SwingUtilities.invokeLater(this::addAppToTray);
+
+        StackPane layout = new StackPane();
+        layout.setStyle(
+                "-fx-background-color: rgba(255, 255, 255, 0.5);"
+        );
+        layout.setPrefSize(300, 200);
+
+        layout.setOnMouseClicked(event -> primaryStage.hide());
+
+        scene.setFill(Color.TRANSPARENT);
+
+        primaryStage.setScene(scene);
     }
 
     private void initRoot() {
@@ -144,7 +171,6 @@ public class UserInterfaceController extends Application {
         rootLayout.setCenter(taskOverview);
     }
 
-
     public void hideEditDialog() {
         dialogStage.close();
     }
@@ -162,7 +188,56 @@ public class UserInterfaceController extends Application {
         dialogStage.setTitle(NEW_TASK_DIALOG_TITTLE);
         dialogStage.showAndWait();
     }
+    //tray
+    private void addAppToTray() {
+        try {
+            java.awt.Toolkit.getDefaultToolkit();
 
+            if (!java.awt.SystemTray.isSupported()) {
+                System.out.println("No system tray support, application exiting.");
+                Platform.exit();
+            }
+            java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
+            URL imageLoc = new URL(
+                    iconImageLoc
+            );
+            java.awt.Image image = ImageIO.read(imageLoc);
+            java.awt.TrayIcon trayIcon = new java.awt.TrayIcon(image);
+
+            trayIcon.addActionListener(event -> Platform.runLater(this::showStage));
+
+            java.awt.MenuItem openItem = new java.awt.MenuItem("SimpleTaskManager");
+            openItem.addActionListener(event -> Platform.runLater(this::showStage));
+
+            java.awt.Font defaultFont = java.awt.Font.decode(null);
+            java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
+            openItem.setFont(boldFont);
+
+            java.awt.MenuItem exitItem = new java.awt.MenuItem("Exit");
+            exitItem.addActionListener(event -> {
+                Platform.exit();
+                tray.remove(trayIcon);
+            });
+
+            final java.awt.PopupMenu popup = new java.awt.PopupMenu();
+            popup.add(openItem);
+            popup.addSeparator();
+            popup.add(exitItem);
+            trayIcon.setPopupMenu(popup);
+
+            tray.add(trayIcon);
+        } catch (java.awt.AWTException | IOException e) {
+            System.out.println("Unable to init system tray");
+            e.printStackTrace();
+        }
+    }
+
+    private void showStage() {
+        if (primaryStage != null) {
+            primaryStage.show();
+            primaryStage.toFront();
+        }
+    }
 
     public void refreshTaskOverviewDetails() {
         taskListController.showTaskDetails();

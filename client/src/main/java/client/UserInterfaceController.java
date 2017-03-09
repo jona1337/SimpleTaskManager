@@ -159,7 +159,7 @@ public class UserInterfaceController extends Application {
             e.printStackTrace();
         }
 
-        this.taskEditDialog = taskEditDialog;
+         this.taskEditDialog = taskEditDialog;
         TaskEditDialogController controller = loader.getController();
         controller.setMainController(this);
         taskEditDialogController = controller;

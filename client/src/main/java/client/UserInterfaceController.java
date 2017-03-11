@@ -30,14 +30,15 @@ import logic.commands.SendTaskListCommand;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.net.URL;
+import java.io.File;
 
 public class UserInterfaceController extends Application {
 
     private static final String APP_TITTLE = "Simple Task Manager";
     private static final String EDIT_TASK_DIALOG_TITTLE = "Edit task";
     private static final String NEW_TASK_DIALOG_TITTLE = "New task";
-    private static final String iconImageLoc =
-            "http://icons.iconarchive.com/icons/custom-icon-design/flatastic-11/16/Megaphone-icon.png";
+    private static final String iconImageLoc ="MegaphoneIcon.png";
+
 
     private Controller controller;
 
@@ -159,11 +160,10 @@ public class UserInterfaceController extends Application {
             e.printStackTrace();
         }
 
-         this.taskEditDialog = taskEditDialog;
+        this.taskEditDialog = taskEditDialog;
         TaskEditDialogController controller = loader.getController();
         controller.setMainController(this);
         taskEditDialogController = controller;
-
     }
 
     public void showTaskOverview() {
@@ -198,10 +198,9 @@ public class UserInterfaceController extends Application {
                 Platform.exit();
             }
             java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
-            URL imageLoc = new URL(
-                    iconImageLoc
-            );
-            java.awt.Image image = ImageIO.read(imageLoc);
+
+            URL imageUrl = this.getClass().getClassLoader().getResource(iconImageLoc);
+            java.awt.Image image = ImageIO.read(imageUrl);
             java.awt.TrayIcon trayIcon = new java.awt.TrayIcon(image);
 
             trayIcon.addActionListener(event -> Platform.runLater(this::showStage));

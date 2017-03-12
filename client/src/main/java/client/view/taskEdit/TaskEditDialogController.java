@@ -3,6 +3,7 @@ package client.view.taskEdit;
 import client.UserInterfaceController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import logic.Task;
 import logic.utils.DateUtils;
@@ -14,7 +15,7 @@ public class TaskEditDialogController {
     @FXML
     private TextField nameField;
     @FXML
-    private TextField descriptionField;
+    private TextArea descriptionArea;
     @FXML
     private TextField dateField;
 
@@ -35,11 +36,11 @@ public class TaskEditDialogController {
 
         if (task == null) {
             nameField.clear();
-            descriptionField.clear();
+            descriptionArea.clear();
             dateField.clear();
         } else {
             nameField.setText(task.getName());
-            descriptionField.setText(task.getDescription());
+            descriptionArea.setText(task.getDescription());
             dateField.setText(DateUtils.format(task.getDate()));
         }
     }
@@ -57,10 +58,10 @@ public class TaskEditDialogController {
             }
 
             if (isNewTaskMode()) {
-                controller.getController().addTaskCommand(nameField.getText(), descriptionField.getText(), date);
+                controller.getController().addTaskCommand(nameField.getText(), descriptionArea.getText(), date);
                 controller.hideEditDialog();
             } else {
-                controller.getController().editTaskCommand(task.getID(), nameField.getText(), descriptionField.getText(), date);
+                controller.getController().editTaskCommand(task.getID(), nameField.getText(), descriptionArea.getText(), date);
                 controller.refreshTaskOverviewDetails();
                 controller.hideEditDialog();
             }
@@ -86,7 +87,7 @@ public class TaskEditDialogController {
             errorMessage += "Write name!\n";
             isValid = false;
         }
-        if (descriptionField.getText() == null || descriptionField.getText().isEmpty()) {
+        if (descriptionArea.getText() == null || descriptionArea.getText().isEmpty()) {
             errorMessage += "Write description!\n";
             isValid = false;
         }

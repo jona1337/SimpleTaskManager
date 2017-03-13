@@ -1,10 +1,10 @@
 package client.view.taskEdit;
 
 import client.UserInterfaceController;
-import com.gluonhq.charm.glisten.control.TimePicker;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import logic.Task;
 import logic.utils.DateUtils;
@@ -13,22 +13,21 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 public class TaskEditDialogController {
+
+    private static final String TIME_PATTERN = "HH:mm";
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat(TIME_PATTERN);
 
     @FXML
     private TextField nameField;
     @FXML
-    private TextField descriptionField;
+    private TextArea descriptionArea;
     @FXML
-    private DatePicker dateField;
+    private DatePicker datePicker;
     @FXML
     private TextField timeField;
 
@@ -50,16 +49,15 @@ public class TaskEditDialogController {
 
         if (task == null) {
             nameField.clear();
-            descriptionField.clear();
+            descriptionArea.clear();
             timeField.clear();
-            dateField.setValue(null);
+            datePicker.setValue(null);
 
         } else {
             nameField.setText(task.getName());
-            descriptionField.setText(task.getDescription());
-            DateFormat timeFormat = new SimpleDateFormat("HH:mm");
-            timeField.setText(timeFormat.format(task.getDate()));
-            dateField.setValue(Instant.ofEpochMilli(task.getDate().getTime()).atZone(ZoneId.systemDefault()).toLocalDate());
+            descriptionArea.setText(task.getDescription());
+            datePicker.setValue(DateUtils.getLocalDate(task.getDate()));
+            timeField.setText(DateUtils.format(task.getDate(), TIME_FORMAT));
         }
     }
 
@@ -68,29 +66,30 @@ public class TaskEditDialogController {
     private void handleOk() throws ParseException {
         if (isInputValid()) {
 
-            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yy");
-            DateFormat timeFormat = new SimpleDateFormat("HH:mm");
-            Date dateFormatObj = new Date();
-            DateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yy HH:mm");
-            DateFormat datePickerFormat = new SimpleDateFormat("yy-MM-dd HH:mm");
+            Calendar calendar = Calendar.getInstance();
 
-            Date date;
-            if (dateField.getValue() == null) {
-                date = dateTimeFormat.parse(dateFormat.format(dateFormatObj)+" "+timeField.getText());
+            if (datePicker.getValue() != null) {
+                Date date = DateUtils.getDate(datePicker.getValue());
+                calendar.setTime(date);
             }
-            else if ((timeField.getText() == null)||(timeField.getText().isEmpty())){
-                date = datePickerFormat.parse(dateField.getValue().toString()+" "+timeFormat.format(dateFormatObj));
 
+            if (!(timeField.getText() == null || timeField.getText().isEmpty())) {
+
+                Date timeDate = DateUtils.parse(timeField.getText(), TIME_FORMAT);
+                Calendar timeCalendar = Calendar.getInstance();
+                timeCalendar.setTime(timeDate);
+
+                calendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
+                calendar.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE));
             }
-            else {
-                date = datePickerFormat.parse(dateField.getValue().toString()+" "+timeField.getText());
-            }
+
+            Date date = calendar.getTime();
 
             if (isNewTaskMode()) {
-                controller.getController().addTaskCommand(nameField.getText(), descriptionField.getText(), date);
+                controller.getController().addTaskCommand(nameField.getText(), descriptionArea.getText(), date);
                 controller.hideEditDialog();
             } else {
-                controller.getController().editTaskCommand(task.getID(), nameField.getText(), descriptionField.getText(), date);
+                controller.getController().editTaskCommand(task.getID(), nameField.getText(), descriptionArea.getText(), date);
                 controller.refreshTaskOverviewDetails();
                 controller.hideEditDialog();
             }
@@ -116,15 +115,13 @@ public class TaskEditDialogController {
             errorMessage += "Write name!\n";
             isValid = false;
         }
-        if (descriptionField.getText() == null || descriptionField.getText().isEmpty()) {
+        if (descriptionArea.getText() == null || descriptionArea.getText().isEmpty()) {
             errorMessage += "Write description!\n";
             isValid = false;
         }
         //new
         if (!((timeField.getText() == null)|| timeField.getText().isEmpty())) {
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-            if (DateUtils.isValidDate(timeField.getText(), timeFormat)) {
-            } else {
+            if (!DateUtils.isValidDate(timeField.getText(), TIME_FORMAT)) {
                 errorMessage += "Write correct format time! 12:00\n";
                 isValid = false;
             }

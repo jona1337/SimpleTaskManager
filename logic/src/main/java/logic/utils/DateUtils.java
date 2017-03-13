@@ -2,12 +2,30 @@ package logic.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 public class DateUtils {
 
     private static final String DEFAULT_DATE_PATTERN = "dd.MM.yyyy HH:mm";
     private static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
+
+    public static Date getDate(LocalDate localDate) {
+
+        Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+        return Date.from(instant);
+
+    }
+
+    public static LocalDate getLocalDate(Date date) {
+
+        Instant instant = date.toInstant();
+        return instant.atZone(ZoneId.systemDefault()).toLocalDate();
+
+    }
+
 
     public static String format(Date date, SimpleDateFormat sdf) {
         if (date == null) {

@@ -68,7 +68,6 @@ public class UserInterfaceController extends Application {
 
         controller = new Controller();
         controller.setController(this);
-        controller.startClient();
 
 
         this.primaryStage = primaryStage;
@@ -80,10 +79,10 @@ public class UserInterfaceController extends Application {
         initDialog();
         initTaskEditDialog();
 
-        controller.sendData(new GetTaskListCommand());
-
         Scene scene = new Scene(rootLayout);
         primaryStage.setScene(scene);
+
+        controller.startClient();
 
 
         showTaskOverview();

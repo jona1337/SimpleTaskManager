@@ -6,31 +6,21 @@ import client.view.taskEdit.TaskEditDialogController;
 import client.view.taskList.TaskListController;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import logic.Task;
 import logic.commands.GetTaskListCommand;
-import logic.commands.SendTaskListCommand;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.net.URL;
-import java.io.File;
 
 public class UserInterfaceController extends Application {
 
@@ -156,6 +146,7 @@ public class UserInterfaceController extends Application {
         AnchorPane taskEditDialog = null;
         try {
             taskEditDialog = (AnchorPane) loader.load();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

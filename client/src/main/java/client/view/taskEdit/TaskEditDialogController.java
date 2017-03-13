@@ -68,6 +68,9 @@ public class TaskEditDialogController {
 
             Calendar calendar = Calendar.getInstance();
 
+            Calendar timeCalendar = Calendar.getInstance();
+            Date timeDate = new Date();
+
             if (datePicker.getValue() != null) {
                 Date date = DateUtils.getDate(datePicker.getValue());
                 calendar.setTime(date);
@@ -75,13 +78,16 @@ public class TaskEditDialogController {
 
             if (!(timeField.getText() == null || timeField.getText().isEmpty())) {
 
-                Date timeDate = DateUtils.parse(timeField.getText(), TIME_FORMAT);
-                Calendar timeCalendar = Calendar.getInstance();
-                timeCalendar.setTime(timeDate);
+                timeDate = DateUtils.parse(timeField.getText(), TIME_FORMAT);
+                timeCalendar = Calendar.getInstance();
 
-                calendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
-                calendar.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE));
             }
+
+
+            timeCalendar.setTime(timeDate);
+            calendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE));
+
 
             Date date = calendar.getTime();
 

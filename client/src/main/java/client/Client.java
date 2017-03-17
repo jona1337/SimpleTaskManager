@@ -91,7 +91,7 @@ public class Client implements Runnable {
             System.exit(1);
         }
 
-        setConnectionStatusInfo("Successful connection! Streams initialized");
+        setConnectionStatusInfo("Successful connection");
         controller.onServerConnectionEstablished();
 
     }
@@ -156,7 +156,7 @@ public class Client implements Runnable {
     public void sendFrame(NetFrame frame) {
 
         if (!isConnected()) {
-            setConnectionStatusInfo("No connection. Cant send frame");
+            setConnectionStatusInfo("No connection");
             return;
         }
 
@@ -164,7 +164,7 @@ public class Client implements Runnable {
             out.writeObject(frame);
             out.flush();
         } catch (SocketException e) {
-            setConnectionStatusInfo("Connection was closed. Cant send frame");
+            setConnectionStatusInfo("Connection was closed");
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();

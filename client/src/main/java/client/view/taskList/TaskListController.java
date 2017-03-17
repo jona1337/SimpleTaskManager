@@ -7,8 +7,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.input.MouseEvent;
 import logic.Task;
 import logic.utils.DateUtils;
+
 
 public class TaskListController {
     @FXML
@@ -102,6 +104,16 @@ public class TaskListController {
             controller.showTaskEditDialog(selectedTask);
         } else {
             showNoSelectedAlert();
+        }
+    }
+
+    @FXML
+    private void handleShowEditDialog(MouseEvent event) {
+        if (event.getClickCount() == 2) {
+            Task task = taskTable.getSelectionModel().getSelectedItem();
+            if (task != null) {
+                controller.showTaskEditDialog(task);
+            }
         }
     }
 

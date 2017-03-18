@@ -15,13 +15,13 @@ public class Controller {
     UserInterfaceController uiController;
     TimerAction timerAction;
     ArrayList<Task> taskArrayList;
+
     public Controller() {
 
         model = new Model();
         client = new Client();
         client.setController(this);
-        timerAction=new TimerAction(this);
-
+        timerAction = new TimerAction(this);
 
     }
 
@@ -46,11 +46,9 @@ public class Controller {
     }
 
 
-
-  public void showTask(List<Task> task)
-  {
-      uiController.showTask(task);
-  }
+    public void showTask(List<Task> task) {
+        uiController.showTask(task);
+    }
 
 
     public void sendData(NetData data) {
@@ -58,7 +56,7 @@ public class Controller {
     }
 
     public void receiveData(NetData data) {
-        ArrayList<Task> taskArrayList=null;
+        ArrayList<Task> taskArrayList = null;
         if (data instanceof SendTaskListCommand) {
 
             model.setTasks(((SendTaskListCommand) data).getTasks());
@@ -80,18 +78,17 @@ public class Controller {
     }
 
     public void editTaskCommand(String id, String name, String description, Date date) {
-        sendData(new EditTaskCommand(id, name, description,date));
+        sendData(new EditTaskCommand(id, name, description, date));
     }
 
     public void deleteTaskCommand(String id) {
         sendData(new DeleteTaskCommand(id));
 
     }
-public void completedCommand(String id)
-{
-    sendData(new CompletedCommand(id));
 
-}
+    public void completedCommand(String id) {
+        sendData(new CompletedCommand(id));
+    }
 
     public void setAppStatusInfo(String info) {
         Platform.runLater(() -> {

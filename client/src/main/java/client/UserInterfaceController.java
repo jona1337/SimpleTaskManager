@@ -22,6 +22,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -30,17 +31,21 @@ import logic.commands.GetTaskListCommand;
 import logic.commands.SendTaskListCommand;
 import logic.utils.DateUtils;
 
+import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import  java.util.*;
+import java.util.*;
 
 public class UserInterfaceController extends Application {
 
     private static final String APP_TITTLE = "Simple Task Manager";
     private static final String EDIT_TASK_DIALOG_TITTLE = "Edit task";
     private static final String NEW_TASK_DIALOG_TITTLE = "New task";
+
+    private static final String iconImageLoc ="MegaphoneIcon.png";
 
     private Controller controller;
 
@@ -70,7 +75,6 @@ public class UserInterfaceController extends Application {
 
         controller = new Controller();
         controller.setController(this);
-        controller.startClient();
 
 
         this.primaryStage = primaryStage;
@@ -82,13 +86,32 @@ public class UserInterfaceController extends Application {
         initDialog();
         initTaskEditDialog();
 
-        controller.sendData(new GetTaskListCommand());
-
         Scene scene = new Scene(rootLayout);
         primaryStage.setScene(scene);
 
+        controller.startClient();
+
         showTaskOverview();
         primaryStage.show();
+
+        //tray
+
+        //tray
+        Platform.setImplicitExit(false);
+
+        javax.swing.SwingUtilities.invokeLater(this::addAppToTray);
+
+        StackPane layout = new StackPane();
+        layout.setStyle(
+                "-fx-background-color: rgba(255, 255, 255, 0.5);"
+        );
+        layout.setPrefSize(300, 200);
+
+        layout.setOnMouseClicked(event -> primaryStage.hide());
+
+        scene.setFill(Color.TRANSPARENT);
+
+        primaryStage.setScene(scene);
 
     }
 
@@ -159,101 +182,32 @@ public class UserInterfaceController extends Application {
     }
 
 
-    public  void showTask(List<Task> task) {
-      // System.out.println(task.getName());
-        Alert alert=new Alert(Alert.AlertType.INFORMATION);
+    public void showTask(List<Task> task) {
+        // System.out.println(task.getName());
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Task Window");
-       // alert.setHeaderText(task.getName());
-        //alert.setContentText(task.getDescription());
 
-      /* ButtonType btn1=new ButtonType("Delay");
-        ButtonType btn2=new ButtonType("Complete");
-        alert.getButtonTypes().setAll(btn1,btn2);
-        Optional<ButtonType>res=alert.showAndWait();
-        if(res.get()==btn1)
-        {
-            List<String>choices=new ArrayList<>();
-            choices.add("15 min");
-            choices.add("45 min");
-            choices.add("1 hour");
-            choices.add("1 day");
-            ChoiceDialog<String>box=new ChoiceDialog<String>("15 min",choices);
-            Optional<String>result=box.showAndWait();
-            if(box.getSelectedItem().equals("15 min"))
-            {
-             Calendar calendar=Calendar.getInstance();
-                /*calendar.setTime(task.getDate());
-                calendar.add(Calendar.MINUTE, 15);
-                System.out.println(calendar.getTime());
-                task.setDate(calendar.getTime());
-                controller.editTaskCommand(task.getID(), task.getName(), task.getDescription(),task.getDate());*/
-                /*calendar.setTime(task.get(0).getDate());
-                calendar.add(Calendar.MINUTE, 15);
-                System.out.println(calendar.getTime());
-                controller.editTaskCommand(task.get(0).getID(), task.get(0).getName(), task.get(0).getDescription(),calendar.getTime());
-            }
-            /*else if(box.getSelectedItem().equals("45 min"))
-            {
-                Calendar calendar=Calendar.getInstance();
-                calendar.setTime(task.getDate());
-                calendar.add(Calendar.MINUTE, 45);
-                System.out.println(calendar.getTime());
-                task.setDate(calendar.getTime());
-                controller.editTaskCommand(task.getID(), task.getName(), task.getDescription(),task.getDate());
-            }
-            else if(box.getSelectedItem().equals("1 hour"))
-            {
-                Calendar calendar=Calendar.getInstance();
-                calendar.setTime(task.getDate());
-                calendar.add(Calendar.HOUR, 1);
-                System.out.println(calendar.getTime());
-                task.setDate(calendar.getTime());
-                controller.editTaskCommand(task.getID(), task.getName(), task.getDescription(),task.getDate());
-            }
-            else if(box.getSelectedItem().equals("1 day"))
-            {
-                Calendar calendar=Calendar.getInstance();
-                calendar.setTime(task.getDate());
-                calendar.add(Calendar.DAY_OF_WEEK, 1);
-                System.out.println(calendar.getTime());
-                task.setDate(calendar.getTime());
-                controller.editTaskCommand(task.getID(), task.getName(), task.getDescription(),task.getDate());
-            }*/
-        //}
-        List<String>choices=new ArrayList<>();
-        for(int i=0;i<task.size();i++)
-        {
+        List<String> choices = new ArrayList<>();
+        for (int i = 0; i < task.size(); i++) {
             choices.add(task.get(i).getID());
         }
-        ChoiceDialog<String>box=new ChoiceDialog<String>(choices.get(0),choices);
-        Optional<String>result=box.showAndWait();
-        if(result.isPresent())
-        {
-           /* Calendar calendar=Calendar.getInstance();
-                /*calendar.setTime(task.getDate());
-                calendar.add(Calendar.MINUTE, 15);
-                System.out.println(calendar.getTime());
-                task.setDate(calendar.getTime());
-                controller.editTaskCommand(task.getID(), task.getName(), task.getDescription(),task.getDate());*/
-            /*calendar.setTime(task.get(0).getDate());
-            calendar.add(Calendar.MINUTE, 15);
-            System.out.println(calendar.getTime());
-            controller.editTaskCommand(task.get(0).getID(), task.get(0).getName(), task.get(0).getDescription(),calendar.getTime());*/
-            Alert alert1=new Alert(Alert.AlertType.INFORMATION);
+        ChoiceDialog<String> box = new ChoiceDialog<String>(choices.get(0), choices);
+        Optional<String> result = box.showAndWait();
+        if (result.isPresent()) {
+
+            Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
             alert1.setTitle("Task Window");
-            ButtonType btn1=new ButtonType("Delay");
-            ButtonType btn2=new ButtonType("Complete");
-            alert1.getButtonTypes().setAll(btn1,btn2);
-            Optional<ButtonType>res=alert1.showAndWait();
-            Task newTask=null;
-            for(int i=0;i<task.size();i++)
-            {
-                if(task.get(i).getID().equals(result.get()))
-                {
-                    newTask=task.get(i);
+            ButtonType btn1 = new ButtonType("Delay");
+            ButtonType btn2 = new ButtonType("Complete");
+            alert1.getButtonTypes().setAll(btn1, btn2);
+            Optional<ButtonType> res = alert1.showAndWait();
+            Task newTask = null;
+            for (int i = 0; i < task.size(); i++) {
+                if (task.get(i).getID().equals(result.get())) {
+                    newTask = task.get(i);
                 }
             }
-            if(res.get()==btn1) {
+            if (res.get() == btn1) {
                 List<String> choices1 = new ArrayList<>();
                 choices1.add("15 min");
                 choices1.add("45 min");
@@ -265,270 +219,22 @@ public class UserInterfaceController extends Application {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(newTask.getDate());
                     calendar.add(Calendar.MINUTE, 15);
-                    controller.editTaskCommand(newTask.getID(),newTask.getName(), newTask.getDescription(), calendar.getTime());
+                    controller.editTaskCommand(newTask.getID(), newTask.getName(), newTask.getDescription(), calendar.getTime());
                 }
                 choices.remove(newTask.getID());
-                result=box.showAndWait();
+                result = box.showAndWait();
 
-                }
-            if(res.get()==btn2)
-            {
+            }
+            if (res.get() == btn2) {
                 controller.completedCommand(newTask.getID());
             }
 
-            }
-                /*calendar.setTime(task.get(0).getDate());
-                calendar.add(Calendar.MINUTE, 15);
-                System.out.println(calendar.getTime());
-                controller.editTaskCommand(task.get(0).getID(), task.get(0).getName(), task.get(0).getDescription(),calendar.getTime());
-
-            }
-            // alert.setHeaderText(task.getName());
-            //alert.setContentText(task.getDescription());
-
         }
 
-      /*  else if(res.get()==btn2)
-        {
-           controller.deleteTaskCommand(task.get(0).getID());
-        }
-*/
-
-
-
-
-
-
-
-
-
-      /*  Stage stg=new Stage();
-
-        javafx.scene.control.Button btn=new javafx.scene.control.Button("Close");
-        btn.setOnAction(act -> {
-
-            stg.close();
-        });
-
-        TableColumn<Task,String> name=new TableColumn<>("Name");
-        name.setMinWidth(50);
-        name.setCellValueFactory(new PropertyValueFactory<Task, String>("name"));
-        TableColumn<Task,String> disc=new TableColumn<>("Description");
-        disc.setMinWidth(50);
-        disc.setCellValueFactory(new PropertyValueFactory<Task, String>("description"));
-        TableColumn<Task,Date> d=new TableColumn<>("Date");
-        d.setMinWidth(50);
-        d.setCellValueFactory(new PropertyValueFactory<Task, Date>("date"));
-
-
-
-        ObservableList<Task> tasks= FXCollections.observableArrayList();
-        for(int i=0;i<  controller.getModel().getTasks().size();i++)
-        {
-                String n = controller.getModel().getTasks().get(i).getName();
-                String disc1 = controller.getModel().getTasks().get(i).getDescription();
-                String id = controller.getModel().getTasks().get(i).getID();
-                Date date = controller.getModel().getTasks().get(i).getDate();
-            boolean status=controller.getModel().getTasks().get(i).getStatus();
-                Task s = new Task(n, disc1, date);
-                s.setStatus(status);
-                tasks.add(s);
-
-        }
-
-        TableView <Task>tableView=new TableView<Task>();
-        tableView.setItems(tasks);
-        tableView.getColumns().addAll(name, disc, d);
-
-        tableView.setRowFactory(new Callback<TableView<Task>, TableRow<Task>>() {
-            @Override
-            public TableRow call(TableView<Task> paramP) {
-                return new TableRow<Task>() {
-                    protected void updateItem(Task paramT, boolean paramBoolean) {
-
-                        if (paramT != null) {
-                           /* switch (paramT.getName()) {
-                                case "fas":
-                                    setStyle("-fx-background-color: LIGHTCORAL; -fx-text-background-color: black;");
-                                    break;
-                                case "vova":
-                                    setStyle("-fx-background-color: skyblue; -fx-text-background-color: black;");
-                                    break;
-                                default:
-                                    setStyle(null);
-                            }*/
-                          /* if(paramT.getStatus())
-                            {
-                                setStyle("-fx-background-color: LIGHTCORAL; -fx-text-background-color: black;");
-                            }
-                            else if(!paramT.getStatus())
-                            {
-                                setStyle("-fx-background-color: green; -fx-text-background-color: black;");
-                            }
-
-                        } else {
-                            setStyle(null);
-                        }
-                        super.updateItem(paramT, paramBoolean);
-
-
-                    }
-                };
-            }
-        });
-        tableView.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.isPrimaryButtonDown() && event.getClickCount() == 1) {
-                    String[] ar = tableView.getSelectionModel().getSelectedItems().get(0).toString().split("/");
-                    System.out.println(ar[2]);
-                    Alert alert=new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Task Window");
-                   // alert.setHeaderText(task.getName());
-                    //alert.setContentText(task.getDescription());
-
-                    ButtonType btn1=new ButtonType("Delay");
-                    ButtonType btn2=new ButtonType("Complete");
-                    alert.getButtonTypes().setAll(btn1,btn2);
-                    Optional<ButtonType>res=alert.showAndWait();
-                    if(res.get()==btn1)
-                    {
-                        List<String>choices=new ArrayList<>();
-                        choices.add("15 min");
-                        choices.add("45 min");
-                        choices.add("1 hour");
-                        choices.add("1 day");
-                        ChoiceDialog<String>box=new ChoiceDialog<String>("15 min",choices);
-                        Optional<String>result=box.showAndWait();
-                        if(box.getSelectedItem().equals("15 min"))
-                        {
-                           /* Calendar calendar=Calendar.getInstance();
-                            calendar.setTime(task.getDate());
-                            calendar.add(Calendar.MINUTE, 15);
-                            System.out.println(calendar.getTime());
-                            task.setDate(calendar.getTime());
-                            controller.editTaskCommand(task.getID(), task.getName(), task.getDescription(),task.getDate());*/
-        //  }
-                     /*   else if(box.getSelectedItem().equals("45 min"))
-                        {
-                           /* Calendar calendar=Calendar.getInstance();
-                            calendar.setTime(task.getDate());
-                            calendar.add(Calendar.MINUTE, 45);
-                            System.out.println(calendar.getTime());
-                            task.setDate(calendar.getTime());
-                            controller.editTaskCommand(task.getID(), task.getName(), task.getDescription(),task.getDate());*/
-        //  }
-                     /*   else if(box.getSelectedItem().equals("1 hour"))
-                        {
-                           /* Calendar calendar=Calendar.getInstance();
-                            calendar.setTime(task.getDate());
-                            calendar.add(Calendar.HOUR, 1);
-                            System.out.println(calendar.getTime());
-                            task.setDate(calendar.getTime());
-                            controller.editTaskCommand(task.getID(), task.getName(), task.getDescription(),task.getDate());*/
-        //   }
-                   /*     else if(box.getSelectedItem().equals("1 day"))
-                        {
-                           /* Calendar calendar=Calendar.getInstance();
-                            calendar.setTime(task.getDate());
-                            calendar.add(Calendar.DAY_OF_WEEK, 1);
-                            System.out.println(calendar.getTime());
-                            task.setDate(calendar.getTime());
-                            controller.editTaskCommand(task.getID(), task.getName(), task.getDescription(),task.getDate());*/
-               /*         }
-                    }
-
-                    else if(res.get()==btn2)
-                    {
-                     //  controller.editTaskCommand(task.getID(),task.getName(),task.getDescription(),task.getDate(),false);
-                      //  controller.deleteTaskCommand(task.getID());
-
-                    }
-                }
-            }
-        });
-        StackPane root = new StackPane();
-        root.getChildren().add(tableView);
-        Button btn11=new Button("addd");
-        btn11.setOnAction(act -> {
-        tableView.getItems().remove(tableView.getSelectionModel().getSelectedIndex());
-
-    });
-        root.getChildren().add(btn11);
-        Scene scn = new Scene(root, 500, 500);
-        stg.setScene(scn);
-        stg.setTitle("MyOldList");
-
-        stg.initModality(Modality.WINDOW_MODAL);
-        stg.showAndWait();
-
-
-
-*/
-
-       /* Stage stg = new Stage();
-
-        javafx.scene.control.Button btn = new javafx.scene.control.Button("Close");
-        btn.setOnAction(act -> {
-
-            stg.close();
-        });
-
-
-        TableColumn<Task, String> name = new TableColumn<>("Name");
-        name.setMinWidth(50);
-        name.setCellValueFactory(new PropertyValueFactory<Task, String>("name"));
-        TableColumn<Task, String> disc = new TableColumn<>("Description");
-        disc.setMinWidth(50);
-        disc.setCellValueFactory(new PropertyValueFactory<Task, String>("description"));
-        TableColumn<Task, Date> d = new TableColumn<>("Date");
-        d.setMinWidth(50);
-        d.setCellValueFactory(new PropertyValueFactory<Task, Date>("date"));
-
-
-        boolean flg = false;
-        Date now = new Date();
-        ObservableList<Task> tasks = FXCollections.observableArrayList();
-        for (int k = 0; k < task.size(); k++) {
-           // if (task.get(k).getDate().compareTo(TimerAction.getNow()) == 1) {
-
-               // {
-                    tasks.add(task.get(k));
-                   // flg = true;
-               // }
-
-            }
-
-           // if (flg) {
-                TableView<Task> tableView = new TableView<Task>();
-                tableView.setItems(tasks);
-                tableView.getColumns().addAll(name, disc, d);
-                Button btn11 = new Button("Delete");
-                btn11.setOnAction(act -> {
-                    String[] ar = tableView.getSelectionModel().getSelectedItems().get(0).toString().split("/");
-                    String id = ar[3];
-                    controller.deleteTaskCommand(id);
-                });
-                StackPane root = new StackPane();
-                root.getChildren().addAll(tableView, btn11);
-
-                // root.getChildren().add(btn11);
-                Scene scn = new Scene(root, 500, 500);
-                stg.setScene(scn);
-                stg.setTitle("MyOldList");
-                stg.initModality(Modality.WINDOW_MODAL);
-                stg.showAndWait();
-
-            }
-      //  }
-
-
-*/
     }
 
 
-    public void deleteOld(String id)
-    {
+    public void deleteOld(String id) {
         controller.deleteTaskCommand(id);
     }
 
@@ -549,23 +255,75 @@ public class UserInterfaceController extends Application {
         dialogStage.setTitle(NEW_TASK_DIALOG_TITTLE);
         dialogStage.showAndWait();
     }
-    public void handleList(javafx.stage.Window mod) throws  Exception{
 
-        Stage stg=new Stage();
-        javafx.scene.control.Button btn=new javafx.scene.control.Button("");
-        btn.setOnAction(act-> {
+    public void handleList(javafx.stage.Window mod) throws Exception {
+
+        Stage stg = new Stage();
+        javafx.scene.control.Button btn = new javafx.scene.control.Button("");
+        btn.setOnAction(act -> {
             stg.close();
         });
         StackPane root = new StackPane(btn);
 
         Scene scn = new Scene(root, 150, 100);
         stg.setScene(scn);
-        stg.setTitle("Новое модальное окно");
+        stg.setTitle("пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ");
         stg.initModality(Modality.WINDOW_MODAL);
         stg.initOwner(mod);
         stg.showAndWait();
 
     }
+
+
+    private void addAppToTray() {
+        try {
+            java.awt.Toolkit.getDefaultToolkit();
+
+            if (!java.awt.SystemTray.isSupported()) {
+                System.out.println("No system tray support, application exiting.");
+                Platform.exit();
+            }
+            java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
+
+            URL imageUrl = this.getClass().getClassLoader().getResource(iconImageLoc);
+            java.awt.Image image = ImageIO.read(imageUrl);
+            java.awt.TrayIcon trayIcon = new java.awt.TrayIcon(image);
+
+            trayIcon.addActionListener(event -> Platform.runLater(this::showStage));
+
+            java.awt.MenuItem openItem = new java.awt.MenuItem("SimpleTaskManager");
+            openItem.addActionListener(event -> Platform.runLater(this::showStage));
+
+            java.awt.Font defaultFont = java.awt.Font.decode(null);
+            java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
+            openItem.setFont(boldFont);
+
+            java.awt.MenuItem exitItem = new java.awt.MenuItem("Exit");
+            exitItem.addActionListener(event -> {
+                Platform.exit();
+                tray.remove(trayIcon);
+            });
+
+            final java.awt.PopupMenu popup = new java.awt.PopupMenu();
+            popup.add(openItem);
+            popup.addSeparator();
+            popup.add(exitItem);
+            trayIcon.setPopupMenu(popup);
+
+            tray.add(trayIcon);
+        } catch (java.awt.AWTException | IOException e) {
+            System.out.println("Unable to init system tray");
+            e.printStackTrace();
+        }
+    }
+
+    private void showStage() {
+        if (primaryStage != null) {
+            primaryStage.show();
+            primaryStage.toFront();
+        }
+    }
+
 
     public void refreshTaskOverviewDetails() {
         taskListController.showTaskDetails();
@@ -576,7 +334,7 @@ public class UserInterfaceController extends Application {
     }
 
     @Override
-    public void stop(){
+    public void stop() {
         controller.stopClient();
     }
 

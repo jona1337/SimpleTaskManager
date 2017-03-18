@@ -14,7 +14,7 @@ import java.net.UnknownHostException;
 public class Client implements Runnable {
 
     private static final String ADDRESS = "localhost";
-    private static final int PORT = 6934;
+    private static final int PORT = 6936;
 
     private Controller controller;
     private Socket socket;
@@ -91,7 +91,7 @@ public class Client implements Runnable {
             System.exit(1);
         }
 
-        setConnectionStatusInfo("Successful connection");
+        setConnectionStatusInfo("Successful connection! Streams initialized");
         controller.onServerConnectionEstablished();
 
     }
@@ -156,7 +156,7 @@ public class Client implements Runnable {
     public void sendFrame(NetFrame frame) {
 
         if (!isConnected()) {
-            setConnectionStatusInfo("No connection");
+            setConnectionStatusInfo("No connection. Cant send frame");
             return;
         }
 
@@ -164,7 +164,7 @@ public class Client implements Runnable {
             out.writeObject(frame);
             out.flush();
         } catch (SocketException e) {
-            setConnectionStatusInfo("Connection was closed");
+            setConnectionStatusInfo("Connection was closed. Cant send frame");
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
@@ -172,6 +172,9 @@ public class Client implements Runnable {
 
 
     }
+
+
+
 
     private void receiveFrame(NetFrame frame) {
         controller.receiveData(frame.getData());

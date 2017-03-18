@@ -6,23 +6,22 @@ import logic.NetFrame;
 import logic.Task;
 import logic.commands.*;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 public class Controller {
 
     Client client;
     Model model;
     UserInterfaceController uiController;
-
+    TimerAction timerAction;
+    ArrayList<Task> taskArrayList;
     public Controller() {
 
         model = new Model();
         client = new Client();
         client.setController(this);
-        //System.out.println("Set controller 1");
-        //uiController.setController(this);
-        //System.out.println("Set controller 2");
+        timerAction=new TimerAction(this);
+
 
     }
 
@@ -46,20 +45,28 @@ public class Controller {
         getTaskListCommand();
     }
 
+
+
+  public void showTask(List<Task> task)
+  {
+      uiController.showTask(task);
+  }
+
+
     public void sendData(NetData data) {
         client.sendFrame(new NetFrame(data));
     }
 
     public void receiveData(NetData data) {
-
+        ArrayList<Task> taskArrayList=null;
         if (data instanceof SendTaskListCommand) {
 
-            model.setTasks( ((SendTaskListCommand)data).getTasks() );
+            model.setTasks(((SendTaskListCommand) data).getTasks());
+            timerAction.timerClick(((SendTaskListCommand) data).getTasks());
+            System.out.println(TimerAction.getNow());
 
-            // --------- КОСТЫЛЬ!111
-            //uiController.updateData();
-            // ---------
         }
+
     }
 
 
@@ -69,16 +76,22 @@ public class Controller {
 
     public void addTaskCommand(String name, String description, Date date) {
         sendData(new AddTaskCommand(name, description, date));
+
     }
 
     public void editTaskCommand(String id, String name, String description, Date date) {
-        sendData(new EditTaskCommand(id, name, description, date));
+        sendData(new EditTaskCommand(id, name, description,date));
     }
 
     public void deleteTaskCommand(String id) {
         sendData(new DeleteTaskCommand(id));
-    }
 
+    }
+public void completedCommand(String id)
+{
+    sendData(new CompletedCommand(id));
+
+}
 
     public void setAppStatusInfo(String info) {
         Platform.runLater(() -> {

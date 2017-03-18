@@ -11,26 +11,9 @@
     <name>simpleTaskManager</name>
 
     <modules>
-        <module>parent</module>
         <module>logic</module>
         <module>server</module>
         <module>client</module>
     </modules>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src.xml</descriptor>
-                    </descriptors>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-
 
 </project>

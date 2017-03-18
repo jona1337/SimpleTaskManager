@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class Server implements Runnable {
 
-    private static final int PORT = 6934;
+    private static final int PORT = 6936;
 
     private ServerSocket serverSocket;
     private Controller controller;

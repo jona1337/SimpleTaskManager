@@ -38,22 +38,23 @@ public class Controller {
                     addTaskCommand.getDescription(),
                     addTaskCommand.getDate());
 
-            sendData(new SendTaskListCommand(model.getTasks()));
-
         } else if (data instanceof DeleteTaskCommand) {
-            model.removeTask( ((DeleteTaskCommand) data).getId() );
+            model.removeTask(((DeleteTaskCommand) data).getId());
 
-            sendData(new SendTaskListCommand(model.getTasks()));
+        }
+        else if (data instanceof CompletedCommand)
+        {
+            model.completeTask(((CompletedCommand)data).getId());
 
-        } else if (data instanceof EditTaskCommand) {
+        }
+        else if (data instanceof EditTaskCommand) {
             EditTaskCommand editTaskCommand = (EditTaskCommand) data;
             model.editTask(
                     editTaskCommand.getId(),
                     editTaskCommand.getName(),
                     editTaskCommand.getDescription(),
-                    editTaskCommand.getDate());
-
-            sendData(new SendTaskListCommand(model.getTasks()));
+                    editTaskCommand.getDate()
+            );
 
         } else if (data instanceof GetTaskListCommand) {
 
@@ -61,12 +62,13 @@ public class Controller {
 
         }
 
+        //Костыль
+        sendData(new SendTaskListCommand(model.getTasks()));
 
     }
 
     public void sendData(NetData data) {
         server.sendFrame(new NetFrame(data));
     }
-
 
 }

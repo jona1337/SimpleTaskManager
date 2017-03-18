@@ -10,7 +10,7 @@ import java.util.Date;
 public class Model implements Serializable {
 
     private static final String DATA_PACKAGE = "data";
-    private static final String TASKS_DATA_FILE = "tasks.data";
+    private static final String TASKS_DATA_FILE = "tasks1.data";
 
     private ArrayList<Task> tasks = new ArrayList<>();
 
@@ -135,6 +135,12 @@ public class Model implements Serializable {
         task.setName(name);
         task.setDescription(description);
         task.setDate(date);
+        saveData();
+    }
+    public void completeTask(String id) {
+        Task task = getTask(id);
+        if (task == null) return;
+        task.setStatus(true);
         saveData();
     }
 

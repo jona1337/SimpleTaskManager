@@ -53,6 +53,7 @@ public class TaskAlarmDialogController {
     @FXML
     private void handleNewTaskAlarmDate() {
         stage.close();
+        controller.showTaskEditDialog(task);
     }
 
     @FXML

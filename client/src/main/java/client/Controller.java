@@ -187,7 +187,6 @@ public class Controller implements Observer {
         ArrayList<Task> tasks = (ArrayList<Task>) CacheLoader.readCache();
         for (Task task : tasks) {
             if (task.getState() == TaskState.OCCURRED)
-
                 task.setState(TaskState.WAITING);
         }
         model.setTasks(tasks);

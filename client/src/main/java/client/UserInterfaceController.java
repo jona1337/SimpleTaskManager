@@ -1,49 +1,33 @@
 package client;
 
 
-import client.view.root.RootLayoutController;
-import client.view.taskEdit.TaskEditDialogController;
-import client.view.taskList.TaskListController;
+import client.view.RootLayoutController;
+import client.view.TaskAlarmDialogController;
+import client.view.TaskEditDialogController;
+import client.view.TaskListController;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import logic.Task;
-import logic.commands.GetTaskListCommand;
-import logic.commands.SendTaskListCommand;
-import logic.utils.DateUtils;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.*;
 
 public class UserInterfaceController extends Application {
 
     private static final String APP_TITTLE = "Simple Task Manager";
     private static final String EDIT_TASK_DIALOG_TITTLE = "Edit task";
     private static final String NEW_TASK_DIALOG_TITTLE = "New task";
+    private static final String ALARM_TASK_DIALOG_TITTLE = "Alarm task!";
 
     private static final String iconImageLoc ="MegaphoneIcon.png";
 
@@ -73,10 +57,6 @@ public class UserInterfaceController extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        controller = new Controller();
-        controller.setController(this);
-
-
         this.primaryStage = primaryStage;
         primaryStage.setTitle(APP_TITTLE);
 
@@ -89,12 +69,12 @@ public class UserInterfaceController extends Application {
         Scene scene = new Scene(rootLayout);
         primaryStage.setScene(scene);
 
-        controller.startClient();
-
         showTaskOverview();
         primaryStage.show();
 
-        //tray
+        controller = new Controller();
+        controller.setController(this);
+        controller.init();
 
         //tray
         Platform.setImplicitExit(false);
@@ -118,7 +98,7 @@ public class UserInterfaceController extends Application {
     private void initRoot() {
 
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/view/root/RootLayout.fxml"));
+        loader.setLocation(getClass().getResource("/view/RootLayout.fxml"));
         BorderPane rootLayout = null;
         try {
             rootLayout = (BorderPane) loader.load();
@@ -134,7 +114,7 @@ public class UserInterfaceController extends Application {
     private void initTaskOverview() {
 
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/view/taskList/TaskOverview.fxml"));
+        loader.setLocation(getClass().getResource("/view/TaskOverview.fxml"));
         AnchorPane taskOverview = null;
         try {
             taskOverview = (AnchorPane) loader.load();
@@ -161,7 +141,7 @@ public class UserInterfaceController extends Application {
 
     private void initTaskEditDialog() {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/view/taskEdit/TaskEditDialog.fxml"));
+        loader.setLocation(getClass().getResource("/view/TaskEditDialog.fxml"));
         AnchorPane taskEditDialog = null;
         try {
             taskEditDialog = (AnchorPane) loader.load();
@@ -177,65 +157,7 @@ public class UserInterfaceController extends Application {
     }
 
     public void showTaskOverview() {
-        refreshTaskOverviewDetails();
         rootLayout.setCenter(taskOverview);
-    }
-
-
-    public void showTask(List<Task> task) {
-        // System.out.println(task.getName());
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Task Window");
-
-        List<String> choices = new ArrayList<>();
-        for (int i = 0; i < task.size(); i++) {
-            choices.add(task.get(i).getID());
-        }
-        ChoiceDialog<String> box = new ChoiceDialog<String>(choices.get(0), choices);
-        Optional<String> result = box.showAndWait();
-        if (result.isPresent()) {
-
-            Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-            alert1.setTitle("Task Window");
-            ButtonType btn1 = new ButtonType("Delay");
-            ButtonType btn2 = new ButtonType("Complete");
-            alert1.getButtonTypes().setAll(btn1, btn2);
-            Optional<ButtonType> res = alert1.showAndWait();
-            Task newTask = null;
-            for (int i = 0; i < task.size(); i++) {
-                if (task.get(i).getID().equals(result.get())) {
-                    newTask = task.get(i);
-                }
-            }
-            if (res.get() == btn1) {
-                List<String> choices1 = new ArrayList<>();
-                choices1.add("15 min");
-                choices1.add("45 min");
-                choices1.add("1 hour");
-                choices1.add("1 day");
-                ChoiceDialog<String> box1 = new ChoiceDialog<String>("15 min", choices1);
-                Optional<String> result1 = box1.showAndWait();
-                if (box1.getSelectedItem().equals("15 min")) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(newTask.getDate());
-                    calendar.add(Calendar.MINUTE, 15);
-                    controller.editTaskCommand(newTask.getID(), newTask.getName(), newTask.getDescription(), calendar.getTime());
-                }
-                choices.remove(newTask.getID());
-                result = box.showAndWait();
-
-            }
-            if (res.get() == btn2) {
-                controller.completedCommand(newTask.getID());
-            }
-
-        }
-
-    }
-
-
-    public void deleteOld(String id) {
-        controller.deleteTaskCommand(id);
     }
 
     public void hideEditDialog() {
@@ -256,24 +178,34 @@ public class UserInterfaceController extends Application {
         dialogStage.showAndWait();
     }
 
-    public void handleList(javafx.stage.Window mod) throws Exception {
+    public void showTaskAlarmDialog(Task task) {
 
-        Stage stg = new Stage();
-        javafx.scene.control.Button btn = new javafx.scene.control.Button("");
-        btn.setOnAction(act -> {
-            stg.close();
-        });
-        StackPane root = new StackPane(btn);
+        Stage alarmDialogStage = new Stage();
+        alarmDialogStage.initModality(Modality.WINDOW_MODAL);
+        alarmDialogStage.initOwner(primaryStage);
+        BorderPane alarmDialogRoot = new BorderPane();
+        Scene scene = new Scene(alarmDialogRoot);
+        alarmDialogStage.setScene(scene);
 
-        Scene scn = new Scene(root, 150, 100);
-        stg.setScene(scn);
-        stg.setTitle("����� ��������� ����");
-        stg.initModality(Modality.WINDOW_MODAL);
-        stg.initOwner(mod);
-        stg.showAndWait();
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/view/TaskAlarmDialog.fxml"));
+        AnchorPane taskAlarmDialog = null;
+        try {
+            taskAlarmDialog = (AnchorPane) loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        TaskAlarmDialogController taskAlarmDialogController = loader.getController();
+        taskAlarmDialogController.setMainController(this);
+        taskAlarmDialogController.setStage(alarmDialogStage);
+
+        alarmDialogRoot.setCenter(taskAlarmDialog);
+        alarmDialogStage.setTitle(ALARM_TASK_DIALOG_TITTLE);
+
+        taskAlarmDialogController.setTask(task);
+        alarmDialogStage.showAndWait();
     }
-
 
     private void addAppToTray() {
         try {
@@ -325,8 +257,9 @@ public class UserInterfaceController extends Application {
     }
 
 
-    public void refreshTaskOverviewDetails() {
-        taskListController.showTaskDetails();
+
+    public void refreshTaskOverviewList() {
+        taskListController.refreshItems();
     }
 
     public void setAppStatusInfo(String info) {
@@ -335,7 +268,7 @@ public class UserInterfaceController extends Application {
 
     @Override
     public void stop() {
-        controller.stopClient();
+        controller.close();
     }
 
     public static void main(String[] args) {

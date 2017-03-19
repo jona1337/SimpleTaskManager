@@ -4,24 +4,29 @@ import javafx.application.Platform;
 import logic.NetData;
 import logic.NetFrame;
 import logic.Task;
+import logic.TaskState;
 import logic.commands.*;
 
 import java.util.*;
 
-public class Controller {
+public class Controller implements Observer {
 
-    Client client;
-    Model model;
-    UserInterfaceController uiController;
-    TimerAction timerAction;
-    ArrayList<Task> taskArrayList;
+    private Client client;
+    private Model model;
+    private UserInterfaceController uiController;
+
+    private ArrayList<Timer> taskAlarmTimers;
+    private boolean loadUpDataFromServerFlag;
 
     public Controller() {
 
         model = new Model();
+        model.addObserver(this);
         client = new Client();
         client.setController(this);
-        timerAction = new TimerAction(this);
+
+        taskAlarmTimers = new ArrayList<>();
+        loadUpDataFromServerFlag = true;
 
     }
 
@@ -33,6 +38,30 @@ public class Controller {
         return model;
     }
 
+
+    public void init() {
+        initData();
+        startClient();
+    }
+
+    public void close() {
+        stopClient();
+        writeToCache();
+    }
+
+
+    public void initData() {
+
+        if (CacheLoader.isCacheExists()) {
+            loadUpDataFromServerFlag = false;
+            readFromCache();
+        } else {
+            loadUpDataFromServerFlag = true;
+        }
+
+    }
+
+
     public void startClient() {
         client.enable();
     }
@@ -42,12 +71,15 @@ public class Controller {
     }
 
     public void onServerConnectionEstablished() {
-        getTaskListCommand();
+        if (loadUpDataFromServerFlag) {
+            loadUpDataFromServer();
+        } else {
+            syncData();
+        }
     }
 
-
-    public void showTask(List<Task> task) {
-        uiController.showTask(task);
+    private void loadUpDataFromServer() {
+        getTaskListCommand();
     }
 
 
@@ -56,13 +88,18 @@ public class Controller {
     }
 
     public void receiveData(NetData data) {
-        ArrayList<Task> taskArrayList = null;
+
         if (data instanceof SendTaskListCommand) {
+            if (loadUpDataFromServerFlag) {
+                loadUpDataFromServerFlag = false;
 
-            model.setTasks(((SendTaskListCommand) data).getTasks());
-            timerAction.timerClick(((SendTaskListCommand) data).getTasks());
-            System.out.println(TimerAction.getNow());
-
+                ArrayList<Task> tasks = ((SendTaskListCommand)data).getTasks();
+                for (Task task : tasks) {
+                    if (task.getState() == TaskState.OCCURRED)
+                        task.setState(TaskState.WAITING);
+                }
+                model.addTasks(tasks);
+            }
         }
 
     }
@@ -72,23 +109,10 @@ public class Controller {
         sendData(new GetTaskListCommand());
     }
 
-    public void addTaskCommand(String name, String description, Date date) {
-        sendData(new AddTaskCommand(name, description, date));
-
+    public void sendTaskListCommand() {
+        sendData(new SendTaskListCommand(new ArrayList<Task>(model.getTasks())));
     }
 
-    public void editTaskCommand(String id, String name, String description, Date date) {
-        sendData(new EditTaskCommand(id, name, description, date));
-    }
-
-    public void deleteTaskCommand(String id) {
-        sendData(new DeleteTaskCommand(id));
-
-    }
-
-    public void completedCommand(String id) {
-        sendData(new CompletedCommand(id));
-    }
 
     public void setAppStatusInfo(String info) {
         Platform.runLater(() -> {
@@ -98,4 +122,85 @@ public class Controller {
     }
 
 
+    private void stopTimers() {
+        for(Timer timer : taskAlarmTimers) {
+            timer.cancel();
+            timer.purge();
+        }
+        taskAlarmTimers.clear();
+    }
+
+    private void refreshTimers() {
+
+        stopTimers();
+
+        List<Task> tasks = new ArrayList<Task>(model.getTasks());
+
+        for(Task task : tasks) {
+
+            if (task.getState() != TaskState.COMPLETED &&
+                    task.getState() != TaskState.DEFERRED &&
+                    task.getState() != TaskState.OCCURRED) {
+
+                Timer timer = new Timer();
+                TimerTask timerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        Platform.runLater(() -> {
+                            task.setState(TaskState.OCCURRED);
+                            uiController.showTaskAlarmDialog(task);
+                        });
+                    }
+                };
+                timer.schedule(timerTask, task.getDate());
+                taskAlarmTimers.add(timer);
+
+            }
+
+
+        }
+
+
+    }
+
+
+
+    private void syncData() {
+
+        if (loadUpDataFromServerFlag) return;
+
+        sendTaskListCommand();
+    }
+
+    private void writeToCache() {
+
+        if (!CacheLoader.isCacheExists()) {
+            CacheLoader.createCacheFile();
+        }
+
+        CacheLoader.writeCache(new ArrayList<>(model.getTasks()));
+
+    }
+
+    private void readFromCache() {
+
+        ArrayList<Task> tasks = (ArrayList<Task>) CacheLoader.readCache();
+        for (Task task : tasks) {
+            if (task.getState() == TaskState.OCCURRED)
+
+                task.setState(TaskState.WAITING);
+        }
+        model.setTasks(tasks);
+    }
+
+
+    /*-------------------------*/
+
+    @Override
+    public void update(Observable o, Object arg) {
+        refreshTimers();
+        writeToCache();
+        syncData();
+        uiController.refreshTaskOverviewList();
+    }
 }

@@ -8,18 +8,20 @@ import java.util.UUID;
 
 public class Task implements Serializable{
 
+    private String id;
+
     private String name;
     private String description;
     private Date date;
-    private String id;
-    private boolean status;
+
+    private TaskState state;
 
     public Task(String name, String description, Date date) {
         this.name = name;
         this.description = description;
         this.date = date;
         this.id = generateID();
-        this.status=false;
+        this.state = TaskState.WAITING;
     }
 
     public String getName() {
@@ -44,10 +46,25 @@ public class Task implements Serializable{
 
     public void setDate(Date date) {
         this.date = date;
+        if (date.after(new Date())) {
+            setState(TaskState.WAITING);
+        }
     }
 
     public String getID() {
         return id;
+    }
+
+    public TaskState getState() {
+        return state;
+    }
+
+    public void setState(TaskState state) {
+        this.state = state;
+    }
+
+    public boolean isExpired() {
+        return date.before(new Date());
     }
 
     public String toString() {
@@ -56,20 +73,19 @@ public class Task implements Serializable{
                 .append(" / ")
                 .append(description)
                 .append(" / ")
-                .append(DateUtils.format(date)).append(" / ").append(id);
+                .append(DateUtils.format(date))
+                .append(" / ")
+                .append(id)
+                .append(" / ")
+                .append(state.toString());
         return sb.toString();
     }
 
-    public void setStatus(boolean status)
-    {
-        this.status=status;
-    }
-    public boolean getStatus()
-    {
-        return status;
-    }
-    public static String generateID() {
+
+    private static String generateID() {
         return UUID.randomUUID().toString();
     }
+
+
 
 }

@@ -1,4 +1,4 @@
-package client.view.root;
+package client.view;
 
 import client.UserInterfaceController;
 import javafx.fxml.FXML;

@@ -1,4 +1,4 @@
-package client.view.taskEdit;
+package client.view;
 
 import client.UserInterfaceController;
 import javafx.fxml.FXML;
@@ -88,11 +88,10 @@ public class TaskEditDialogController {
             Date date = calendar.getTime();
 
             if (isNewTaskMode()) {
-                controller.getController().addTaskCommand(nameField.getText(), descriptionArea.getText(), date);
+                controller.getController().getModel().addTask(nameField.getText(), descriptionArea.getText(), date);
                 controller.hideEditDialog();
             } else {
-                controller.getController().editTaskCommand(task.getID(), nameField.getText(), descriptionArea.getText(), date);
-                controller.refreshTaskOverviewDetails();
+                controller.getController().getModel().editTask(task.getID(), nameField.getText(), descriptionArea.getText(), date);
                 controller.hideEditDialog();
             }
 

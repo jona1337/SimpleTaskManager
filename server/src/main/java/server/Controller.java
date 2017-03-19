@@ -29,40 +29,17 @@ public class Controller {
 
     }
 
+    public void sendTaskListCommand() {
+        sendData(new SendTaskListCommand(model.getTasks()));
+    }
+
     public void receiveData(NetData data) {
 
-        if (data instanceof AddTaskCommand) {
-            AddTaskCommand addTaskCommand = (AddTaskCommand) data;
-            model.addTask(
-                    addTaskCommand.getName(),
-                    addTaskCommand.getDescription(),
-                    addTaskCommand.getDate());
-
-            sendData(new SendTaskListCommand(model.getTasks()));
-
-        } else if (data instanceof DeleteTaskCommand) {
-            model.removeTask(((DeleteTaskCommand) data).getId());
-
-            sendData(new SendTaskListCommand(model.getTasks()));
-
-        } else if (data instanceof EditTaskCommand) {
-            EditTaskCommand editTaskCommand = (EditTaskCommand) data;
-            model.editTask(
-                    editTaskCommand.getId(),
-                    editTaskCommand.getName(),
-                    editTaskCommand.getDescription(),
-                    editTaskCommand.getDate());
-
-            sendData(new SendTaskListCommand(model.getTasks()));
-
-        } else if (data instanceof CompletedCommand) {
-            model.completeTask(((CompletedCommand) data).getId());
-
+        if (data instanceof SendTaskListCommand) {
+            model.setTasks(((SendTaskListCommand)data).getTasks());
         } else if (data instanceof GetTaskListCommand) {
-            sendData(new SendTaskListCommand(model.getTasks()));
-
+            sendTaskListCommand();
         }
-
 
     }
 

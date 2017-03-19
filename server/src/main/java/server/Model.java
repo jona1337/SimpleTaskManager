@@ -2,6 +2,7 @@ package server;
 
 
 import logic.Task;
+import logic.TaskState;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.Date;
 public class Model implements Serializable {
 
     private static final String DATA_PACKAGE = "data";
-    private static final String TASKS_DATA_FILE = "tasks1.data";
+    private static final String TASKS_DATA_FILE = "tasks.data";
 
     private ArrayList<Task> tasks = new ArrayList<>();
 
@@ -102,46 +103,8 @@ public class Model implements Serializable {
         return tasks;
     }
 
-    public int getTaskCount() {
-        return tasks.size();
-    }
-
-    /*---------------*/
-
-    public Task getTask(String id) {
-        for (Task task : tasks) {
-            if (task.getID().equals(id))
-                return task;
-        }
-        return null;
-    }
-
-    public void addTask(String name, String description, Date date) {
-        Task task = new Task(name, description, date);
-        tasks.add(task);
+    public void setTasks(ArrayList<Task> tasks) {
+        this.tasks = tasks;
         saveData();
     }
-
-    public void removeTask(String id) {
-        Task task = getTask(id);
-        if (task == null) return;
-        tasks.remove(task);
-        saveData();
-    }
-
-    public void editTask(String id, String name, String description, Date date) {
-        Task task = getTask(id);
-        if (task == null) return;
-        task.setName(name);
-        task.setDescription(description);
-        task.setDate(date);
-        saveData();
-    }
-    public void completeTask(String id) {
-        Task task = getTask(id);
-        if (task == null) return;
-        task.setStatus(true);
-        saveData();
-    }
-
 }

@@ -139,6 +139,14 @@ public class TaskListController {
         }
     }
 
+    @FXML
+    private void handleCompleteTask() {
+        Task task = taskTable.getSelectionModel().getSelectedItem();
+        if (task != null) {
+            controller.getController().getModel().completeTask(task.getID());
+        }
+    }
+
     private void showNoSelectedAlert() {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.initOwner(controller.getPrimaryStage());

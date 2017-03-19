@@ -46,9 +46,6 @@ public class Task implements Serializable{
 
     public void setDate(Date date) {
         this.date = date;
-        if (date.after(new Date())) {
-            setState(TaskState.WAITING);
-        }
     }
 
     public String getID() {

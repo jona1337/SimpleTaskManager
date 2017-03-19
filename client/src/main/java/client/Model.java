@@ -83,6 +83,9 @@ public class Model extends Observable {
         task.setName(name);
         task.setDescription(description);
         task.setDate(date);
+        if (date.after(new Date())) {
+            task.setState(TaskState.WAITING);
+        }
         setChanged();
         notifyObservers(task);
     }

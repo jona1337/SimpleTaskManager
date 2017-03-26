@@ -107,4 +107,57 @@ public class Model implements Serializable {
         this.tasks = tasks;
         saveData();
     }
+
+    /*---------------*/
+
+    public int getTaskCount() {
+        return tasks.size();
+    }
+
+    public Task getTask(String id) {
+        for (Task task : tasks) {
+            if (task.getID().equals(id))
+                return task;
+        }
+        return null;
+    }
+
+    public void addTasks(ArrayList<Task> tasks) {
+
+        for(Task task : tasks) {
+            if (getTask(task.getID()) == null)
+                this.tasks.add(task);
+        }
+
+    }
+
+    public void addTask(String name, String description, Date date, Date alarmDate) {
+        Task task = new Task(name, description, date, alarmDate);
+        tasks.add(task);
+        saveData();
+    }
+
+    public void removeTask(String id) {
+        Task task = getTask(id);
+        if (task == null) return;
+        tasks.remove(task);
+        saveData();
+    }
+
+    public void editTask(String id, String name, String description, Date date, Date alarmDate) {
+        Task task = getTask(id);
+        if (task == null) return;
+        task.setName(name);
+        task.setDescription(description);
+        task.setDate(date);
+        task.setAlarmDate(alarmDate);
+        saveData();
+    }
+
+    public void setTaskState(String id, TaskState state) {
+        Task task = getTask(id);
+        if (task == null) return;
+        task.setState(state);
+    }
+
 }

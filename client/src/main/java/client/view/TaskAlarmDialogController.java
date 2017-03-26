@@ -45,27 +45,15 @@ public class TaskAlarmDialogController {
     }
 
     @FXML
-    private void handleDeleteTask() {
-        stage.close();
-        controller.getController().getModel().deleteTask(task.getID());
-    }
-
-    @FXML
-    private void handleNewTaskAlarmDate() {
-        stage.close();
-        controller.showTaskEditDialog(task);
-    }
-
-    @FXML
-    private void handleDeferTask() {
-        stage.close();
-        controller.getController().getModel().deferTask(task.getID());
-    }
-
-    @FXML
     private void handleCompleteTask() {
         stage.close();
-        controller.getController().getModel().completeTask(task.getID());
+        controller.getController().completeTask(task.getID());
+    }
+
+    @FXML
+    private void handleEditTask() {
+        stage.close();
+        controller.showTaskEditDialog(task);
     }
 
 }

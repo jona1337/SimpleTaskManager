@@ -44,9 +44,7 @@
               </GridPane>
               <HBox layoutX="215.0" layoutY="259.0" spacing="5.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
                   <children>
-                  <Button layoutX="112.1875" layoutY="259.0" mnemonicParsing="false" onAction="#handleDeleteTask" text="Delete" />
-                  <Button layoutX="167.0" layoutY="259.0" mnemonicParsing="false" onAction="#handleNewTaskAlarmDate" text="New alarm" />
-                  <Button layoutX="221.0" layoutY="259.0" mnemonicParsing="false" onAction="#handleDeferTask" text="Forget" />
+                  <Button layoutX="167.0" layoutY="259.0" mnemonicParsing="false" onAction="#handleEditTask" text="Edit..." />
                       <Button mnemonicParsing="false" onAction="#handleCompleteTask" text="Complete!" />
                   </children>
               </HBox>

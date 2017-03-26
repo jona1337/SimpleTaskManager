@@ -6,15 +6,15 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public class Task implements Serializable{
+public class Task implements Serializable {
 
     private String id;
 
     private String name;
     private String description;
     private Date date;
-
     private TaskState state;
+    private Date alarmDate;
 
     public Task(String name, String description, Date date) {
         this.name = name;
@@ -22,6 +22,19 @@ public class Task implements Serializable{
         this.date = date;
         this.id = generateID();
         this.state = TaskState.WAITING;
+    }
+
+    public Task(String name, String description, Date date, Date alarmDate) {
+        this.name = name;
+        this.description = description;
+        this.date = date;
+        this.alarmDate = alarmDate;
+        this.id = generateID();
+        this.state = TaskState.WAITING;
+    }
+
+    public String getID() {
+        return id;
     }
 
     public String getName() {
@@ -48,16 +61,20 @@ public class Task implements Serializable{
         this.date = date;
     }
 
-    public String getID() {
-        return id;
-    }
-
     public TaskState getState() {
         return state;
     }
 
     public void setState(TaskState state) {
         this.state = state;
+    }
+
+    public Date getAlarmDate() {
+        return alarmDate;
+    }
+
+    public void setAlarmDate(Date alarmDate) {
+        this.alarmDate = alarmDate;
     }
 
     public boolean isExpired() {

@@ -1,14 +1,13 @@
 package client;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import logic.Task;
 import logic.TaskState;
+import logic.utils.DateUtils;
 
 import java.util.*;
 
-public class Model extends Observable {
+public class Model {
 
     private final ArrayList<Task> tasks;
 
@@ -29,8 +28,6 @@ public class Model extends Observable {
         Platform.runLater(() -> {
             this.tasks.clear();
             this.tasks.addAll(tasks);
-            setChanged();
-            notifyObservers();
         });
 
     }
@@ -42,10 +39,10 @@ public class Model extends Observable {
     /*---------------*/
 
     public void addTasks(ArrayList<Task> tasks) {
-        this.tasks.addAll(tasks);
-        System.out.println("addtasks");
-        setChanged();
-        notifyObservers();
+        for(Task task : tasks) {
+            if (getTask(task.getID()) == null)
+                this.tasks.add(task);
+        }
     }
 
     public Task getTask(String id) {
@@ -56,91 +53,63 @@ public class Model extends Observable {
         return null;
     }
 
-    public void addTask(String name, String description, Date date) {
-        Task task = new Task(name, description, date);
+    public void addTask(String name, String description, Date date, Date alarmDate) {
+        Task task = new Task(name, description, date, alarmDate);
         tasks.add(task);
-        setChanged();
-        notifyObservers();
     }
 
     public void addTask(Task task) {
-        tasks.add(task);
-        setChanged();
-        notifyObservers();
+        if (getTask(task.getID()) != null) return;
+
+        this.tasks.add(task);
     }
 
     public void deleteTask(String id) {
         Task task = getTask(id);
         if (task == null) return;
         tasks.remove(task);
-        setChanged();
-        notifyObservers();
     }
 
-    public void editTask(String id, String name, String description, Date date) {
+    public void editTask(String id, String name, String description, Date date, Date alarmDate) {
         Task task = getTask(id);
         if (task == null) return;
         task.setName(name);
         task.setDescription(description);
         task.setDate(date);
-        if (date.after(new Date())) {
-            task.setState(TaskState.WAITING);
-        }
-        setChanged();
-        notifyObservers(task);
+        task.setAlarmDate(alarmDate);
     }
 
-    public void completeTask(String id) {
+    public void setTaskState(String id, TaskState state) {
         Task task = getTask(id);
         if (task == null) return;
-        task.setState(TaskState.COMPLETED);
-        setChanged();
-        notifyObservers(task);
+        task.setState(state);
     }
 
-    public void deferTask(String id) {
-        Task task = getTask(id);
-        if (task == null) return;
-        task.setState(TaskState.DEFERRED);
-        setChanged();
-        notifyObservers(task);
-    }
-
-    public ArrayList<Task> getSortedTasks() {
-
+    public ArrayList<Task> getCompletedTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
         for (Task task : this.tasks) {
-            tasks.add(task);
+            if (task.getState() == TaskState.COMPLETED)
+                tasks.add(task);
         }
+        return tasks;
+    }
 
-        Collections.sort(tasks, new Comparator<Task>() {
-            public int compare(Task o1, Task o2) {
-                return o1.getDate().compareTo(o2.getDate());
-            }
-        });
-
-        ArrayList<Task> completedTasks = new ArrayList<>();
-        ArrayList<Task> waitingTasks = new ArrayList<>();
-        ArrayList<Task> deferredTasks = new ArrayList<>();
-
+    public ArrayList<Task> getIncompleteTasks() {
+        ArrayList<Task> tasks = new ArrayList<>();
         for (Task task : this.tasks) {
-            if (task.getState() == null ||
-                    task.getState() == TaskState.WAITING) {
-                waitingTasks.add(task);
-            } else if (task.getState() == TaskState.COMPLETED) {
-                completedTasks.add(task);
-            } else {
-                deferredTasks.add(task);
+            if (task.getState() != TaskState.COMPLETED)
+                tasks.add(task);
+        }
+        return tasks;
+    }
+
+    public ArrayList<Task> getTasksByAlarmDate(Date date) {
+        ArrayList<Task> tasks = new ArrayList<>();
+        for (Task task : this.tasks) {
+            if (DateUtils.isFormatEquals(task.getAlarmDate(), date)) {
+                tasks.add(task);
             }
         }
-
-        tasks.clear();
-        tasks.addAll(completedTasks);
-        tasks.addAll(waitingTasks);
-        tasks.addAll(deferredTasks);
-
-        Collections.reverse(tasks);
-
         return tasks;
     }
 

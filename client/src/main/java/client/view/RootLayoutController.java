@@ -1,6 +1,7 @@
 package client.view;
 
 import client.UserInterfaceController;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -38,6 +39,6 @@ public class RootLayoutController {
 
     @FXML
     private void handleExit() {
-        System.exit(0);
+        Platform.exit();
     }
 }

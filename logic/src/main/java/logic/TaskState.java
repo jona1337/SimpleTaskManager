@@ -2,6 +2,8 @@ package logic;
 
 public enum TaskState {
 
-    WAITING, OCCURRED, COMPLETED, DEFERRED
+    WAITING,  COMPLETED,
+    //OCCURRED,
+    //DEFERRED
 
 }

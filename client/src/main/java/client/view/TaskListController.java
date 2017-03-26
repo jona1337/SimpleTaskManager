@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import logic.Task;
 import logic.TaskState;
 import logic.utils.DateUtils;
@@ -21,12 +22,25 @@ public class TaskListController {
     @FXML
     private TableColumn<Task, String> dateColumn;
 
+
+    @FXML
+    private AnchorPane detailsAnchorPane;
     @FXML
     private Label nameLabel;
     @FXML
     private Label descriptionLabel;
     @FXML
     private Label dateLabel;
+    @FXML
+    private Label alarmDateLabel;
+    @FXML
+    private Label alarmDateInfoLabel;
+    @FXML
+    private Label stateLabel;
+    @FXML
+    private Button switchTaskStateButton;
+
+
 
     private UserInterfaceController controller;
 
@@ -48,12 +62,10 @@ public class TaskListController {
                 if (task != null) {
                     if (task.getState() == TaskState.COMPLETED) {
                         setStyle("-fx-control-inner-background:honeydew");
-                    } else if (task.getState() == TaskState.DEFERRED ||
-                            task.getState() == TaskState.OCCURRED) {
+                    } else {
                         if (task.isExpired()) {
                             setStyle("-fx-control-inner-background:mistyrose");
-                        } else {
-                            setStyle("-fx-control-inner-background:lightyellow");
+                            //setStyle("-fx-control-inner-background:lightyellow");
                         }
                     }
                 }
@@ -75,7 +87,7 @@ public class TaskListController {
     }
 
     public void refreshItems() {
-        ArrayList<Task> tasks = controller.getController().getModel().getSortedTasks();
+        ArrayList<Task> tasks = controller.getController().getModel().getTasks();
         taskTable.setItems(FXCollections.observableArrayList(tasks));
         taskTable.refresh();
     }
@@ -84,15 +96,39 @@ public class TaskListController {
     private void showTaskDetails(Task task) {
         if (task == null) {
 
+            detailsAnchorPane.setDisable(true);
+            switchTaskStateButton.setVisible(false);
+
             nameLabel.setText("");
             dateLabel.setText("");
             descriptionLabel.setText("");
+            alarmDateLabel.setText("");
+            stateLabel.setText("");
 
         } else {
 
-            nameLabel.setText(task.getName() + " " + task.getState().toString());
+            detailsAnchorPane.setDisable(false);
+            switchTaskStateButton.setVisible(true);
+
+            nameLabel.setText(task.getName());
             descriptionLabel.setText(task.getDescription());
             dateLabel.setText(DateUtils.format(task.getDate()));
+
+            if (task.getState() == TaskState.COMPLETED) {
+                stateLabel.setText("Completed");
+                switchTaskStateButton.setText("Rollback");
+            } else {
+                stateLabel.setText("Waiting");
+                switchTaskStateButton.setText("Complete");
+            }
+
+            if (task.getAlarmDate() != null) {
+                alarmDateLabel.setText(DateUtils.format(task.getAlarmDate()));
+                alarmDateInfoLabel.setDisable(false);
+            } else {
+                alarmDateLabel.setText("");
+                alarmDateInfoLabel.setDisable(true);
+            }
 
         }
     }
@@ -107,7 +143,7 @@ public class TaskListController {
         Task task = taskTable.getSelectionModel().getSelectedItem();
         if (task != null) {
             String id = task.getID();
-            controller.getController().getModel().deleteTask(id);
+            controller.getController().deleteTask(id);
         } else {
             showNoSelectedAlert();
         }
@@ -140,10 +176,14 @@ public class TaskListController {
     }
 
     @FXML
-    private void handleCompleteTask() {
+    private void handleSwitchTaskState() {
         Task task = taskTable.getSelectionModel().getSelectedItem();
         if (task != null) {
-            controller.getController().getModel().completeTask(task.getID());
+            if (task.getState() == TaskState.COMPLETED) {
+                controller.getController().rollbackTask(task.getID());
+            } else {
+                controller.getController().completeTask(task.getID());
+            }
         }
     }
 

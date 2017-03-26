@@ -1,10 +1,7 @@
 package client;
 
 
-import client.view.RootLayoutController;
-import client.view.TaskAlarmDialogController;
-import client.view.TaskEditDialogController;
-import client.view.TaskListController;
+import client.view.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +18,7 @@ import logic.Task;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class UserInterfaceController extends Application {
 
@@ -28,8 +26,7 @@ public class UserInterfaceController extends Application {
     private static final String EDIT_TASK_DIALOG_TITTLE = "Edit task";
     private static final String NEW_TASK_DIALOG_TITTLE = "New task";
     private static final String ALARM_TASK_DIALOG_TITTLE = "Alarm task!";
-
-    private static final String iconImageLoc ="MegaphoneIcon.png";
+    private static final String ALARM_MULTI_TASK_DIALOG_TITTLE = "Multi alarm task!";
 
     private Controller controller;
 
@@ -38,12 +35,12 @@ public class UserInterfaceController extends Application {
     private Parent taskOverview;
 
     private Stage dialogStage;
-    private BorderPane dialogRoot;
-    private Parent taskEditDialog;
 
     private RootLayoutController rootLayoutController;
     private TaskListController taskListController;
     private TaskEditDialogController taskEditDialogController;
+
+    private TrayController trayController;
 
 
     public Controller getController() {
@@ -58,13 +55,15 @@ public class UserInterfaceController extends Application {
     public void start(Stage primaryStage) {
 
         this.primaryStage = primaryStage;
+        primaryStage.setResizable(false);
         primaryStage.setTitle(APP_TITTLE);
 
         initRoot();
         initTaskOverview();
 
-        initDialog();
-        initTaskEditDialog();
+        initDialogEdit();
+
+        initTray();
 
         Scene scene = new Scene(rootLayout);
         primaryStage.setScene(scene);
@@ -75,23 +74,6 @@ public class UserInterfaceController extends Application {
         controller = new Controller();
         controller.setController(this);
         controller.init();
-
-        //tray
-        Platform.setImplicitExit(false);
-
-        javax.swing.SwingUtilities.invokeLater(this::addAppToTray);
-
-        StackPane layout = new StackPane();
-        layout.setStyle(
-                "-fx-background-color: rgba(255, 255, 255, 0.5);"
-        );
-        layout.setPrefSize(300, 200);
-
-        layout.setOnMouseClicked(event -> primaryStage.hide());
-
-        scene.setFill(Color.TRANSPARENT);
-
-        primaryStage.setScene(scene);
 
     }
 
@@ -128,18 +110,11 @@ public class UserInterfaceController extends Application {
 
     }
 
-    private void initDialog() {
-        Stage dialogStage = new Stage();
-        dialogStage.initModality(Modality.WINDOW_MODAL);
-        dialogStage.initOwner(primaryStage);
-        BorderPane dialogRoot = new BorderPane();
-        Scene scene = new Scene(dialogRoot);
-        dialogStage.setScene(scene);
-        this.dialogStage = dialogStage;
-        this.dialogRoot = dialogRoot;
-    }
+    private void initDialogEdit() {
 
-    private void initTaskEditDialog() {
+        Stage dialogStage = new Stage();
+        dialogStage.initOwner(primaryStage);
+
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/view/TaskEditDialog.fxml"));
         AnchorPane taskEditDialog = null;
@@ -149,11 +124,28 @@ public class UserInterfaceController extends Application {
             e.printStackTrace();
         }
 
-        this.taskEditDialog = taskEditDialog;
+        BorderPane dialogRoot = new BorderPane();
+        dialogRoot.setCenter(taskEditDialog);
+
+        dialogStage.setScene(new Scene(dialogRoot));
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+
+
         TaskEditDialogController controller = loader.getController();
         controller.setMainController(this);
         taskEditDialogController = controller;
 
+
+        this.dialogStage = dialogStage;
+
+    }
+
+
+    private void initTray() {
+        TrayController trayController = new TrayController();
+        trayController.setController(this);
+        trayController.init();
+        this.trayController = trayController;
     }
 
     public void showTaskOverview() {
@@ -166,14 +158,14 @@ public class UserInterfaceController extends Application {
 
     public void showTaskEditDialog(Task task) {
         taskEditDialogController.setTask(task);
-        dialogRoot.setCenter(taskEditDialog);
         dialogStage.setTitle(EDIT_TASK_DIALOG_TITTLE);
-        dialogStage.showAndWait();
+        Platform.runLater(() -> {
+            dialogStage.showAndWait();
+        });
     }
 
     public void showNewTaskDialog() {
         taskEditDialogController.setTask(null);
-        dialogRoot.setCenter(taskEditDialog);
         dialogStage.setTitle(NEW_TASK_DIALOG_TITTLE);
         dialogStage.showAndWait();
     }
@@ -181,11 +173,7 @@ public class UserInterfaceController extends Application {
     public void showTaskAlarmDialog(Task task) {
 
         Stage alarmDialogStage = new Stage();
-        alarmDialogStage.initModality(Modality.WINDOW_MODAL);
         alarmDialogStage.initOwner(primaryStage);
-        BorderPane alarmDialogRoot = new BorderPane();
-        Scene scene = new Scene(alarmDialogRoot);
-        alarmDialogStage.setScene(scene);
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/view/TaskAlarmDialog.fxml"));
@@ -196,69 +184,54 @@ public class UserInterfaceController extends Application {
             e.printStackTrace();
         }
 
+        BorderPane alarmRoot = new BorderPane();
+        alarmRoot.setCenter(taskAlarmDialog);
+
+        alarmDialogStage.setScene(new Scene(alarmRoot));
+        alarmDialogStage.setTitle(ALARM_TASK_DIALOG_TITTLE);
+        alarmDialogStage.initModality(Modality.WINDOW_MODAL);
+
+
         TaskAlarmDialogController taskAlarmDialogController = loader.getController();
         taskAlarmDialogController.setMainController(this);
         taskAlarmDialogController.setStage(alarmDialogStage);
-
-        alarmDialogRoot.setCenter(taskAlarmDialog);
-        alarmDialogStage.setTitle(ALARM_TASK_DIALOG_TITTLE);
 
         taskAlarmDialogController.setTask(task);
         alarmDialogStage.showAndWait();
     }
 
-    private void addAppToTray() {
+    public void showMultiTaskAlarmDialog(ArrayList<Task> tasks) {
+
+        Stage alarmDialogStage = new Stage();
+        alarmDialogStage.initOwner(primaryStage);
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/view/MultiTaskAlarmDialog.fxml"));
+        AnchorPane taskAlarmDialog = null;
         try {
-            java.awt.Toolkit.getDefaultToolkit();
-
-            if (!java.awt.SystemTray.isSupported()) {
-                System.out.println("No system tray support, application exiting.");
-                Platform.exit();
-            }
-            java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
-
-            URL imageUrl = this.getClass().getClassLoader().getResource(iconImageLoc);
-            java.awt.Image image = ImageIO.read(imageUrl);
-            java.awt.TrayIcon trayIcon = new java.awt.TrayIcon(image);
-
-            trayIcon.addActionListener(event -> Platform.runLater(this::showStage));
-
-            java.awt.MenuItem openItem = new java.awt.MenuItem("SimpleTaskManager");
-            openItem.addActionListener(event -> Platform.runLater(this::showStage));
-
-            java.awt.Font defaultFont = java.awt.Font.decode(null);
-            java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
-            openItem.setFont(boldFont);
-
-            java.awt.MenuItem exitItem = new java.awt.MenuItem("Exit");
-            exitItem.addActionListener(event -> {
-                Platform.exit();
-                tray.remove(trayIcon);
-            });
-
-            final java.awt.PopupMenu popup = new java.awt.PopupMenu();
-            popup.add(openItem);
-            popup.addSeparator();
-            popup.add(exitItem);
-            trayIcon.setPopupMenu(popup);
-
-            tray.add(trayIcon);
-        } catch (java.awt.AWTException | IOException e) {
-            System.out.println("Unable to init system tray");
+            taskAlarmDialog = (AnchorPane) loader.load();
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
+        BorderPane alarmRoot = new BorderPane();
+        alarmRoot.setCenter(taskAlarmDialog);
+
+        alarmDialogStage.setScene(new Scene(alarmRoot));
+        alarmDialogStage.setTitle(ALARM_MULTI_TASK_DIALOG_TITTLE);
+        alarmDialogStage.initModality(Modality.WINDOW_MODAL);
+
+
+        MultiTaskAlarmDialogController taskAlarmDialogController = loader.getController();
+        taskAlarmDialogController.setMainController(this);
+        taskAlarmDialogController.setStage(alarmDialogStage);
+
+        taskAlarmDialogController.setTasks(tasks);
+        alarmDialogStage.showAndWait();
     }
 
-    private void showStage() {
-        if (primaryStage != null) {
-            primaryStage.show();
-            primaryStage.toFront();
-        }
-    }
 
-
-
-    public void refreshTaskOverviewList() {
+    public void update() {
         taskListController.refreshItems();
     }
 
@@ -269,6 +242,7 @@ public class UserInterfaceController extends Application {
     @Override
     public void stop() {
         controller.close();
+        trayController.close();
     }
 
     public static void main(String[] args) {

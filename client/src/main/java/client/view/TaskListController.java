@@ -15,6 +15,10 @@ import java.util.ArrayList;
 
 
 public class TaskListController {
+
+    @FXML
+    private TreeView<String> treeView;
+
     @FXML
     private TableView<Task> taskTable;
     @FXML
@@ -22,33 +26,39 @@ public class TaskListController {
     @FXML
     private TableColumn<Task, String> dateColumn;
 
-
-    @FXML
-    private AnchorPane detailsAnchorPane;
-    @FXML
-    private Label nameLabel;
-    @FXML
-    private Label descriptionLabel;
-    @FXML
-    private Label dateLabel;
-    @FXML
-    private Label alarmDateLabel;
-    @FXML
-    private Label alarmDateInfoLabel;
-    @FXML
-    private Label stateLabel;
     @FXML
     private Button switchTaskStateButton;
+    @FXML
+    private Button editTaskButton;
+    @FXML
+    private Button deleteTaskButton;
+
+
+    TreeItem<String> treeTasksItem;
+    TreeItem<String> treeIncompleteTasksItem;
+    TreeItem<String> treeCompletedTasksItem;
 
 
 
     private UserInterfaceController controller;
 
     public TaskListController() {
+        treeTasksItem = new TreeItem<String> ("Tasks");
+        treeTasksItem.setExpanded(true);
+
+        treeIncompleteTasksItem = new TreeItem<String>("Incomplete");
+        treeTasksItem.getChildren().add(treeIncompleteTasksItem);
+
+        treeCompletedTasksItem = new TreeItem<String>("Completed");
+        treeTasksItem.getChildren().add(treeCompletedTasksItem);
+
     }
 
     @FXML
     private void initialize() {
+
+        taskTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
         nameColumn.setCellValueFactory(
                 cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         dateColumn.setCellValueFactory(
@@ -78,6 +88,12 @@ public class TaskListController {
         taskTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showTaskDetails(newValue));
 
+        treeView.setRoot(treeTasksItem);
+        treeView.getSelectionModel().select(treeIncompleteTasksItem);
+
+        treeView.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> refreshItems());
+
 
     }
 
@@ -87,65 +103,42 @@ public class TaskListController {
     }
 
     public void refreshItems() {
-        ArrayList<Task> tasks = controller.getController().getModel().getTasks();
+        ArrayList<Task> tasks = new ArrayList<>();
+        if (treeView.getSelectionModel().getSelectedItem() == treeCompletedTasksItem) {
+            tasks = controller.getController().getModel().getCompletedTasks();
+        } else {
+            tasks = controller.getController().getModel().getIncompleteTasks();
+        }
         taskTable.setItems(FXCollections.observableArrayList(tasks));
         taskTable.refresh();
     }
 
-
     private void showTaskDetails(Task task) {
         if (task == null) {
 
-            detailsAnchorPane.setDisable(true);
+            editTaskButton.setDisable(true);
+            deleteTaskButton.setDisable(true);
             switchTaskStateButton.setVisible(false);
-
-            nameLabel.setText("");
-            dateLabel.setText("");
-            descriptionLabel.setText("");
-            alarmDateLabel.setText("");
-            stateLabel.setText("");
 
         } else {
 
-            detailsAnchorPane.setDisable(false);
+            editTaskButton.setDisable(false);
+            deleteTaskButton.setDisable(false);
             switchTaskStateButton.setVisible(true);
 
-            nameLabel.setText(task.getName());
-            descriptionLabel.setText(task.getDescription());
-            dateLabel.setText(DateUtils.format(task.getDate()));
-
             if (task.getState() == TaskState.COMPLETED) {
-                stateLabel.setText("Completed");
                 switchTaskStateButton.setText("Rollback");
             } else {
-                stateLabel.setText("Waiting");
                 switchTaskStateButton.setText("Complete");
-            }
-
-            if (task.getAlarmDate() != null) {
-                alarmDateLabel.setText(DateUtils.format(task.getAlarmDate()));
-                alarmDateInfoLabel.setDisable(false);
-            } else {
-                alarmDateLabel.setText("");
-                alarmDateInfoLabel.setDisable(true);
             }
 
         }
     }
 
-    public void showTaskDetails() {
-        showTaskDetails(taskTable.getSelectionModel().getSelectedItem());
-    }
-
     @FXML
     private void handleDeleteTask() {
-
-        Task task = taskTable.getSelectionModel().getSelectedItem();
-        if (task != null) {
-            String id = task.getID();
-            controller.getController().deleteTask(id);
-        } else {
-            showNoSelectedAlert();
+        for(Task task : taskTable.getSelectionModel().getSelectedItems()) {
+            controller.getController().deleteTask(task.getID());
         }
     }
 
@@ -166,20 +159,19 @@ public class TaskListController {
     }
 
     @FXML
-    private void handleShowEditDialog(MouseEvent event) {
+    private void handleShowTaskDetails(MouseEvent event) {
         if (event.getClickCount() == 2) {
             Task task = taskTable.getSelectionModel().getSelectedItem();
             if (task != null) {
-                controller.showTaskEditDialog(task);
+                controller.showTaskDetails(task);
             }
         }
     }
 
     @FXML
     private void handleSwitchTaskState() {
-        Task task = taskTable.getSelectionModel().getSelectedItem();
-        if (task != null) {
-            if (task.getState() == TaskState.COMPLETED) {
+        for(Task task : taskTable.getSelectionModel().getSelectedItems()) {
+            if (treeView.getSelectionModel().getSelectedItem() == treeCompletedTasksItem) {
                 controller.getController().rollbackTask(task.getID());
             } else {
                 controller.getController().completeTask(task.getID());

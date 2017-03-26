@@ -56,4 +56,9 @@ public class TaskAlarmDialogController {
         controller.showTaskEditDialog(task);
     }
 
+    @FXML
+    private void handleOk() {
+        stage.close();
+    }
+
 }

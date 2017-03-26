@@ -27,6 +27,7 @@ public class UserInterfaceController extends Application {
     private static final String NEW_TASK_DIALOG_TITTLE = "New task";
     private static final String ALARM_TASK_DIALOG_TITTLE = "Alarm task!";
     private static final String ALARM_MULTI_TASK_DIALOG_TITTLE = "Multi alarm task!";
+    private static final String TASK_DETAILS_TITTLE = "Task info";
 
     private Controller controller;
 
@@ -35,10 +36,12 @@ public class UserInterfaceController extends Application {
     private Parent taskOverview;
 
     private Stage dialogStage;
+    private Stage taskDetailsStage;
 
     private RootLayoutController rootLayoutController;
     private TaskListController taskListController;
     private TaskEditDialogController taskEditDialogController;
+    private TaskDetailsController taskDetailsController;
 
     private TrayController trayController;
 
@@ -62,6 +65,8 @@ public class UserInterfaceController extends Application {
         initTaskOverview();
 
         initDialogEdit();
+
+        initTaskDetailsDialog();
 
         initTray();
 
@@ -140,6 +145,35 @@ public class UserInterfaceController extends Application {
 
     }
 
+    private void initTaskDetailsDialog() {
+
+        Stage dialogStage = new Stage();
+        dialogStage.initOwner(primaryStage);
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/view/TaskDetails.fxml"));
+        AnchorPane taskDetailsDialog = null;
+        try {
+            taskDetailsDialog = (AnchorPane) loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        BorderPane dialogRoot = new BorderPane();
+        dialogRoot.setCenter(taskDetailsDialog);
+
+        dialogStage.setScene(new Scene(dialogRoot));
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.setTitle(TASK_DETAILS_TITTLE);
+
+
+        TaskDetailsController controller = loader.getController();
+        controller.setMainController(this);
+        taskDetailsController = controller;
+
+        this.taskDetailsStage = dialogStage;
+
+    }
 
     private void initTray() {
         TrayController trayController = new TrayController();
@@ -156,6 +190,10 @@ public class UserInterfaceController extends Application {
         dialogStage.close();
     }
 
+    public void hideTaskDetailsDialog() {
+        taskDetailsStage.close();
+    }
+
     public void showTaskEditDialog(Task task) {
         taskEditDialogController.setTask(task);
         dialogStage.setTitle(EDIT_TASK_DIALOG_TITTLE);
@@ -168,6 +206,13 @@ public class UserInterfaceController extends Application {
         taskEditDialogController.setTask(null);
         dialogStage.setTitle(NEW_TASK_DIALOG_TITTLE);
         dialogStage.showAndWait();
+    }
+
+    public void showTaskDetails(Task task) {
+        taskDetailsController.setTask(task);
+        Platform.runLater(() -> {
+            taskDetailsStage.showAndWait();
+        });
     }
 
     public void showTaskAlarmDialog(Task task) {

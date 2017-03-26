@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="190.0" prefWidth="280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.MultiTaskAlarmDialogController">
+<AnchorPane prefHeight="190.0" prefWidth="340.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.MultiTaskAlarmDialogController">
    <children>
       <Label layoutX="7.0" layoutY="6.0" text="Multi task alarm" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <font>
@@ -16,13 +16,13 @@
       <ListView fx:id="list" layoutX="20.0" layoutY="50.0" prefHeight="100.0" prefWidth="260.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
       <HBox layoutX="160.0" layoutY="234.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Button layoutX="167.0" layoutY="259.0" mnemonicParsing="false" onAction="#handleEditTask" text="Edit..." />
-            <Button mnemonicParsing="false" onAction="#handleCompleteTask" text="Complete!" />
+            <Button mnemonicParsing="false" onAction="#handleOk" prefWidth="90.0" text="OK" />
          </children>
       </HBox>
-      <HBox layoutX="10.0" layoutY="242.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+      <HBox layoutX="10.0" layoutY="242.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#handleCompleteAll" text="Complete all" />
+            <Button mnemonicParsing="false" onAction="#handleEditTask" text="Edit..." />
+            <Button mnemonicParsing="false" onAction="#handleCompleteTask" text="Complete!" />
          </children>
       </HBox>
    </children>

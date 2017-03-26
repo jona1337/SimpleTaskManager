@@ -86,5 +86,10 @@ public class MultiTaskAlarmDialogController {
         }
     }
 
+    @FXML
+    private void handleOk() {
+        stage.close();
+    }
+
 
 }

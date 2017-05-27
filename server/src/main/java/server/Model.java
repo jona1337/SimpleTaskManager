@@ -4,23 +4,32 @@ package server;
 import logic.Task;
 import logic.TaskState;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+
+@ManagedBean(name="list")
+@SessionScoped
 public class Model implements Serializable {
 
     private static final String DATA_PACKAGE = "data";
     private static final String TASKS_DATA_FILE = "tasks.data";
 
     private ArrayList<Task> tasks = new ArrayList<>();
+    private List<Task> result_tasks;
 
     public Model() {
+
         initializeData();
     }
 
     public Model(ArrayList<Task> tasks) {
         this.tasks = tasks;
+         this.result_tasks=tasks;
     }
 
     /*---------------*/
@@ -101,6 +110,12 @@ public class Model implements Serializable {
 
     public ArrayList<Task> getTasks() {
         return tasks;
+    }
+
+    public List<Task> getTask2() {
+        List<Task> taskslist=getTasks();
+        taskslist.add(new Task("i1","task1",new Date(), new Date()));
+        return taskslist;
     }
 
     public void setTasks(ArrayList<Task> tasks) {
